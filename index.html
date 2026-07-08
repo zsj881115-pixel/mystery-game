@@ -2,1625 +2,1209 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>雨夜山庄 · 三刀两毒</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>铁与冰的抉择 · 七国纪</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=MedievalSharp&family=Cinzel+Decorative:wght@700;900&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+  :root {
+    --bg-dark: #08060a;
+    --bg-card: #15110a;
+    --bg-parchment: #1e1810;
+    --gold: #c9a227;
+    --gold-bright: #e8c84a;
+    --gold-dim: #8a7a4a;
+    --parchment: #d4c4a0;
+    --parchment-dim: #9a8a6a;
+    --blood: #8b2c2c;
+    --blood-bright: #c94444;
+    --ice: #5a8aaa;
+    --steel: #4a5a6a;
+    --shadow: rgba(0,0,0,0.8);
+  }
 
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0d12;--panel:rgba(18,22,30,.92);--border:rgba(120,100,80,.25);
-  --text:#d4cfc6;--dim:#8a8478;--accent:#c4956a;--danger:#c44a4a;
-  --success:#6a9a6a;--gold:#d4a853;--lock:#555;
-}
-body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;
-  min-height:100vh;overflow-x:hidden;position:relative}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* Rain effect */
-.rain{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:.3}
-.rain::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
-  background-image:repeating-linear-gradient(105deg,transparent,transparent 8px,
-  rgba(180,200,220,.03) 8px,rgba(180,200,220,.03) 10px));animation:rain .5s linear infinite}
-@keyframes rain{from{background-position:0 0}to{background-position:-20px 20px}}
+  body {
+    background: var(--bg-dark);
+    color: var(--parchment);
+    font-family: 'MedievalSharp', 'Microsoft YaHei', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(201,162,39,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, rgba(139,44,44,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 80%, rgba(90,138,170,0.03) 0%, transparent 50%);
+  }
 
-/* Scene bg */
-#sceneBg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;
-  background-size:cover;background-position:center;transition:background-image 1.2s ease-in-out;
-  filter:brightness(.35) saturate(.7)}
-#sceneBg::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
-  background:linear-gradient(to bottom,rgba(10,13,18,.4) 0%,rgba(10,13,18,.75) 50%,rgba(10,13,18,.95) 100%)}
+  /* ========== TITLE SCREEN ========== */
+  #title-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: opacity 0.8s ease;
+  }
+  #title-screen.hidden { opacity: 0; pointer-events: none; }
 
-/* Main container */
-#game{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;padding:20px;max-width:680px;margin:0 auto}
+  .title-bg {
+    position: absolute;
+    inset: 0;
+    background: url('images/cover.jpg') center/cover no-repeat;
+    filter: brightness(0.45);
+  }
+  .title-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 20%, rgba(8,6,10,0.8) 80%);
+  }
 
-/* Title screen */
-.title-screen{text-align:center;padding:40px 20px;animation:fadeUp 1s ease}
-.title-screen h1{font-family:'Noto Serif SC',serif;font-size:2.8em;font-weight:900;
-  color:var(--gold);text-shadow:0 0 30px rgba(212,168,83,.3);letter-spacing:.08em;margin-bottom:.3em}
-.title-screen .subtitle{font-family:'Noto Serif SC',serif;font-size:1.1em;color:var(--dim);
-  letter-spacing:.3em;margin-bottom:2em}
-.title-screen .desc{font-size:.95em;color:var(--dim);line-height:1.8;max-width:480px;margin:0 auto 2em}
-.btn-start{display:inline-block;padding:14px 48px;font-family:'Noto Serif SC',serif;font-size:1.2em;
-  color:var(--gold);border:1px solid var(--gold);border-radius:2px;cursor:pointer;
-  background:transparent;letter-spacing:.15em;transition:all .4s}
-.btn-start:hover{background:rgba(212,168,83,.1);box-shadow:0 0 20px rgba(212,168,83,.2)}
+  .title-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 2rem;
+    animation: titleFadeIn 2s ease;
+  }
 
-/* Scene card */
-.scene-card{background:var(--panel);border:1px solid var(--border);border-radius:4px;
-  padding:28px 24px;margin-bottom:16px;width:100%;backdrop-filter:blur(8px);
-  animation:fadeUp .6s ease;box-shadow:0 8px 32px rgba(0,0,0,.4)}
-.scene-title{font-family:'Noto Serif SC',serif;font-size:1.4em;color:var(--accent);
-  margin-bottom:16px;letter-spacing:.05em;border-bottom:1px solid var(--border);padding-bottom:10px}
-.scene-text{font-size:.95em;line-height:1.85;color:var(--text);margin-bottom:20px;white-space:pre-line}
-.scene-text .highlight{color:var(--gold);font-weight:500}
-.scene-text .danger{color:var(--danger)}
-.scene-text .clue{color:var(--accent);font-style:italic}
-.scene-text .thought{color:var(--dim);font-style:italic}
+  @keyframes titleFadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-/* Character avatar */
-.char-row{display:flex;align-items:center;gap:12px;margin:12px 0;padding:10px 14px;
-  background:rgba(255,255,255,.03);border-radius:4px;border-left:3px solid var(--border)}
-.char-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:1.3em;flex-shrink:0;border:2px solid var(--border)}
-.char-info{flex:1}
-.char-name{font-weight:500;color:var(--text);font-size:.95em}
-.char-desc{font-size:.8em;color:var(--dim);margin-top:2px}
+  .title-main {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900;
+    color: var(--gold-bright);
+    text-shadow: 0 0 30px rgba(201,162,39,0.5), 0 0 60px rgba(201,162,39,0.2), 0 4px 8px rgba(0,0,0,0.8);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    line-height: 1.1;
+  }
 
-/* Choices */
-.choices{display:flex;flex-direction:column;gap:10px;width:100%}
-.choice-btn{display:block;width:100%;text-align:left;padding:14px 18px;
-  background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:3px;
-  color:var(--text);font-size:.92em;line-height:1.5;cursor:pointer;transition:all .3s;
-  font-family:inherit;position:relative}
-.choice-btn:hover{background:rgba(196,149,106,.08);border-color:var(--accent);transform:translateX(4px)}
-.choice-btn .tag{display:inline-block;font-size:.75em;padding:2px 8px;border-radius:2px;
-  margin-left:8px;vertical-align:middle}
-.tag-prof{background:rgba(106,154,106,.15);color:var(--success);border:1px solid rgba(106,154,106,.3)}
-.tag-item{background:rgba(196,149,106,.15);color:var(--accent);border:1px solid rgba(196,149,106,.3)}
-.tag-evidence{background:rgba(212,168,83,.1);color:var(--gold);border:1px solid rgba(212,168,83,.2)}
-.choice-btn.locked{opacity:.4;cursor:not-allowed;border-style:dashed}
-.choice-btn.locked:hover{transform:none;background:rgba(255,255,255,.04)}
-.choice-btn.locked .lock-hint{display:block;font-size:.78em;color:var(--lock);margin-top:4px}
+  .title-sub {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    color: var(--parchment-dim);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+  }
 
-/* Profession cards */
-.card-deck{display:flex;justify-content:center;perspective:1000px;margin:20px 0}
-.prof-card{width:160px;height:220px;position:relative;cursor:pointer;
-  transform-style:preserve-3d;transition:transform .8s}
-.prof-card.flipped{transform:rotateY(180deg)}
-.prof-card .face{position:absolute;width:100%;height:100%;backface-visibility:hidden;
-  border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:16px;border:2px solid var(--border)}
-.prof-card .front{background:linear-gradient(135deg,#1a1f2a,#0f1318)}
-.prof-card .back{background:linear-gradient(135deg,#2a2015,#1a1510);transform:rotateY(180deg);
-  border-color:var(--accent)}
-.prof-card .front .card-back-pattern{font-size:3em;opacity:.3}
-.prof-card .back .prof-icon{font-size:2.5em;margin-bottom:8px}
-.prof-card .back .prof-name{font-family:'Noto Serif SC',serif;font-size:1.1em;color:var(--gold);margin-bottom:6px}
-.prof-card .back .prof-skill{font-size:.78em;color:var(--dim);text-align:center;line-height:1.5}
+  .title-desc {
+    font-size: clamp(0.85rem, 1.8vw, 1.05rem);
+    color: var(--parchment);
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    line-height: 1.8;
+    opacity: 0.85;
+  }
 
-/* Item grid */
-.item-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
-.item-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:4px;
-  padding:16px;cursor:pointer;transition:all .3s;text-align:center}
-.item-card:hover{border-color:var(--accent);background:rgba(196,149,106,.08);transform:translateY(-2px)}
-.item-card.selected{border-color:var(--gold);background:rgba(212,168,83,.1);box-shadow:0 0 15px rgba(212,168,83,.15)}
-.item-icon{font-size:2em;margin-bottom:6px}
-.item-name{font-family:'Noto Serif SC',serif;color:var(--accent);font-size:.95em;margin-bottom:4px}
-.item-desc{font-size:.78em;color:var(--dim);line-height:1.5}
+  .btn-start {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--gold-bright);
+    background: linear-gradient(180deg, rgba(30,24,16,0.9), rgba(10,8,10,0.95));
+    border: 2px solid var(--gold);
+    padding: 1rem 3rem;
+    cursor: pointer;
+    letter-spacing: 0.15em;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+  }
+  .btn-start::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(201,162,39,0.15), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+  .btn-start:hover {
+    background: linear-gradient(180deg, rgba(40,30,20,0.9), rgba(20,15,20,0.95));
+    border-color: var(--gold-bright);
+    box-shadow: 0 0 20px rgba(201,162,39,0.3);
+    transform: translateY(-2px);
+  }
+  .btn-start:hover::before { transform: translateX(100%); }
 
-/* Evidence panel */
-.evidence-toggle{position:fixed;bottom:20px;right:20px;z-index:50;
-  background:var(--panel);border:1px solid var(--border);border-radius:4px;
-  padding:8px 16px;cursor:pointer;color:var(--accent);font-size:.85em;
-  backdrop-filter:blur(8px);transition:all .3s}
-.evidence-toggle:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(196,149,106,.15)}
-.evidence-toggle .count{background:var(--accent);color:var(--bg);border-radius:10px;
-  padding:1px 7px;font-size:.8em;margin-left:6px;font-weight:700}
-.evidence-panel{position:fixed;bottom:0;right:0;width:100%;max-width:380px;
-  max-height:70vh;background:var(--panel);border-top:1px solid var(--border);
-  border-left:1px solid var(--border);z-index:51;transform:translateY(100%);
-  transition:transform .4s ease;backdrop-filter:blur(12px);overflow-y:auto;padding:20px}
-.evidence-panel.open{transform:translateY(0)}
-.evidence-panel h3{font-family:'Noto Serif SC',serif;color:var(--accent);margin-bottom:12px;
-  font-size:1.1em;border-bottom:1px solid var(--border);padding-bottom:8px}
-.ev-item{padding:8px 0;border-bottom:1px solid rgba(120,100,80,.1);font-size:.85em;line-height:1.6}
-.ev-item .ev-title{color:var(--gold);font-weight:500}
-.ev-item .ev-detail{color:var(--dim);font-size:.85em;margin-top:2px}
-.ev-empty{text-align:center;color:var(--dim);padding:20px;font-size:.9em}
+  .title-ornament {
+    color: var(--gold);
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    letter-spacing: 1rem;
+    opacity: 0.6;
+  }
 
-/* Accusation */
-.accuse-section{margin-bottom:20px}
-.accuse-q{font-family:'Noto Serif SC',serif;color:var(--accent);font-size:1em;margin-bottom:10px}
-.suspect-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.suspect-card{display:flex;align-items:center;gap:10px;padding:10px;
-  background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:4px;
-  cursor:pointer;transition:all .2s}
-.suspect-card:hover{border-color:var(--accent)}
-.suspect-card.selected{border-color:var(--danger);background:rgba(196,74,74,.08)}
-.suspect-card .av{width:36px;height:36px;border-radius:50%;display:flex;
-  align-items:center;justify-content:center;font-size:1.1em;flex-shrink:0}
-.suspect-card .nm{font-size:.85em}
-.count-btns{display:flex;gap:8px;flex-wrap:wrap}
-.count-btn{padding:8px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);
-  border-radius:3px;color:var(--text);cursor:pointer;font-family:inherit;transition:all .2s}
-.count-btn:hover{border-color:var(--accent)}
-.count-btn.selected{border-color:var(--danger);background:rgba(196,74,74,.1);color:var(--danger)}
+  /* ========== CHARACTER SELECT ========== */
+  #select-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    animation: fadeIn 0.6s ease;
+  }
+  #select-screen.active { display: flex; }
 
-/* Ending */
-.ending-card{text-align:center;padding:30px}
-.ending-card h2{font-family:'Noto Serif SC',serif;font-size:2em;margin-bottom:16px}
-.ending-card .ending-text{font-size:.95em;line-height:1.9;text-align:left;margin:16px 0}
-.ending-card .stats{font-size:.85em;color:var(--dim);margin:16px 0;line-height:1.8}
-.replay-info{background:rgba(255,255,255,.03);border:1px solid var(--border);
-  border-radius:4px;padding:16px;margin-top:20px;text-align:left}
-.replay-info h4{color:var(--accent);font-size:.9em;margin-bottom:8px}
-.replay-info .combo{display:inline-block;font-size:.78em;padding:2px 8px;margin:2px;
-  background:rgba(255,255,255,.05);border-radius:2px;color:var(--dim)}
-.replay-info .combo.played{color:var(--success);border:1px solid rgba(106,154,106,.3)}
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-/* Animations */
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.anim-fade{animation:fadeIn .8s ease}
+  .select-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .select-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+  .select-header p {
+    color: var(--parchment-dim);
+    font-size: 0.95rem;
+  }
 
-/* Progress bar */
-.progress-bar{width:100%;height:3px;background:rgba(120,100,80,.15);border-radius:2px;
-  margin-bottom:16px;overflow:hidden}
-.progress-bar .fill{height:100%;background:linear-gradient(to right,var(--accent),var(--gold));
-  transition:width .5s ease}
+  .character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px;
+    width: 100%;
+  }
 
-/* Toast */
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);
-  background:var(--panel);border:1px solid var(--accent);border-radius:4px;
-  padding:12px 24px;color:var(--accent);font-size:.9em;z-index:100;
-  backdrop-filter:blur(8px);transition:transform .4s ease;max-width:90%}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.toast .toast-icon{margin-right:6px}
+  .char-card {
+    background: var(--bg-card);
+    border: 2px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .char-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(8,6,10,0.5));
+    pointer-events: none;
+    z-index: 1;
+  }
+  .char-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(201,162,39,0.15);
+  }
 
-/* Mobile */
-@media(max-width:600px){
-  #game{padding:12px}
-  .title-screen h1{font-size:2em}
-  .scene-card{padding:20px 16px}
-  .item-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .suspect-grid{grid-template-columns:1fr}
-  .prof-card{width:130px;height:180px}
-}
+  .char-card-banner {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .char-card-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent, var(--bg-card));
+  }
+  .char-sigil {
+    font-size: 3rem;
+    z-index: 1;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+  }
+
+  .char-card-body {
+    padding: 1rem 1.2rem 1.2rem;
+    position: relative;
+    z-index: 2;
+  }
+  .char-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+    margin-bottom: 0.2rem;
+  }
+  .char-title {
+    font-size: 0.8rem;
+    color: var(--parchment-dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+  }
+  .char-desc {
+    font-size: 0.85rem;
+    color: var(--parchment);
+    line-height: 1.5;
+    opacity: 0.8;
+  }
+  .char-card-footer {
+    margin-top: 0.8rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(201,162,39,0.15);
+    font-size: 0.75rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* ========== GAME SCREEN ========== */
+  #game-screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+  }
+  #game-screen.active { display: flex; }
+
+  .scene-wrapper {
+    width: 100%;
+    max-width: 800px;
+    padding: 1.5rem 1rem;
+    animation: sceneIn 0.5s ease;
+  }
+
+  @keyframes sceneIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .scene-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(201,162,39,0.15);
+  }
+  .scene-char {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+  .scene-act {
+    font-size: 0.8rem;
+    color: var(--parchment-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .scene-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid rgba(201,162,39,0.2);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .scene-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.85);
+  }
+  .scene-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(8,6,10,0.4));
+    pointer-events: none;
+  }
+
+  .scene-text {
+    font-size: clamp(1rem, 2.2vw, 1.25rem);
+    line-height: 1.9;
+    color: var(--parchment);
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 0 0.5rem;
+  }
+
+  .choice-btn {
+    font-family: 'MedievalSharp', 'Microsoft YaHei', serif;
+    font-size: 1.05rem;
+    color: var(--parchment);
+    background: linear-gradient(180deg, rgba(30,24,16,0.8), rgba(15,12,10,0.9));
+    border: 1px solid rgba(201,162,39,0.25);
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s ease;
+    position: relative;
+    border-radius: 2px;
+  }
+  .choice-btn::before {
+    content: '\25C6';
+    color: var(--gold-dim);
+    margin-right: 0.8rem;
+    transition: all 0.3s ease;
+    font-size: 0.7em;
+    vertical-align: middle;
+  }
+  .choice-btn:hover {
+    border-color: var(--gold);
+    background: linear-gradient(180deg, rgba(40,30,20,0.8), rgba(20,15,12,0.9));
+    color: var(--gold-bright);
+    transform: translateX(6px);
+    box-shadow: -4px 0 0 0 var(--gold);
+  }
+  .choice-btn:hover::before {
+    color: var(--gold-bright);
+  }
+
+  /* ========== ENDING SCREEN ========== */
+  #ending-screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.8s ease;
+  }
+  #ending-screen.active { display: flex; }
+
+  .ending-wrapper {
+    width: 100%;
+    max-width: 800px;
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+
+  .ending-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid var(--gold);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 40px rgba(201,162,39,0.1);
+    margin-bottom: 2rem;
+  }
+  .ending-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.8);
+  }
+
+  .ending-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.3em;
+    margin-bottom: 0.5rem;
+  }
+
+  .ending-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    color: var(--gold-bright);
+    text-shadow: 0 0 20px rgba(201,162,39,0.3);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .ending-text {
+    font-size: 1.15rem;
+    line-height: 2;
+    color: var(--parchment);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .ending-divider {
+    color: var(--gold);
+    font-size: 1.2rem;
+    letter-spacing: 1rem;
+    margin: 2rem 0 1rem;
+    opacity: 0.5;
+  }
+
+  .ending-counter {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+  .ending-counter strong {
+    font-size: 1.5rem;
+    color: var(--gold-bright);
+  }
+
+  .ending-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  .gallery-item {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+  .gallery-item.discovered {
+    border-color: var(--gold);
+    background: rgba(201,162,39,0.1);
+  }
+  .gallery-item.locked {
+    border-color: rgba(201,162,39,0.15);
+    color: var(--parchment-dim);
+    opacity: 0.3;
+  }
+  .gallery-item.new {
+    border-color: var(--blood-bright);
+    box-shadow: 0 0 12px rgba(201,68,68,0.4);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 12px rgba(201,68,68,0.3); }
+    50% { box-shadow: 0 0 20px rgba(201,68,68,0.5); }
+  }
+
+  .ending-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    color: var(--parchment);
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    padding: 0.8rem 2rem;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+  }
+  .btn-secondary:hover {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    box-shadow: 0 0 12px rgba(201,162,39,0.15);
+  }
+
+  /* Back button */
+  .back-btn {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 50;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    color: var(--parchment-dim);
+    background: rgba(15,12,10,0.8);
+    border: 1px solid rgba(201,162,39,0.2);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+    display: none;
+  }
+  .back-btn.visible { display: block; }
+  .back-btn:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  /* Tooltip */
+  .gallery-item {
+    position: relative;
+  }
+  .gallery-item .tooltip {
+    display: none;
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    color: var(--parchment);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    border-radius: 2px;
+    z-index: 10;
+  }
+  .gallery-item:hover .tooltip { display: block; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .character-grid { grid-template-columns: 1fr; }
+    .scene-wrapper { padding: 1rem 0.8rem; }
+    .choice-btn { font-size: 0.95rem; padding: 0.9rem 1.2rem; }
+  }
 </style>
 </head>
 <body>
-<div class="rain"></div>
-<div id="sceneBg"></div>
 
-<div id="game"></div>
-
-<div class="evidence-toggle" id="evToggle" style="display:none">
-  证据手册 <span class="count" id="evCount">0</span>
+<!-- Title Screen -->
+<div id="title-screen">
+  <div class="title-bg"></div>
+  <div class="title-content">
+    <div class="title-ornament">&#10046; &#10046; &#10046;</div>
+    <h1 class="title-main">铁与冰的抉择</h1>
+    <div class="title-sub">七 国 纪</div>
+    <p class="title-desc">
+      七国纷争，铁王座悬空。<br>
+      北境异鬼蠢动，东方巨龙复苏。<br>
+      你的每一个选择，都将改写王国的命运。<br>
+      <span style="color:var(--gold-dim);font-size:0.9em;">六条道路，十种结局，只等你来抉择。</span>
+    </p>
+    <button class="btn-start" onclick="startGame()">开始你的命运</button>
+    <div class="title-ornament">&#10046; &#10046; &#10046;</div>
+  </div>
 </div>
-<div class="evidence-panel" id="evPanel">
-  <h3>证据手册</h3>
-  <div id="evList"></div>
+
+<!-- Character Select -->
+<div id="select-screen">
+  <div class="select-header">
+    <h2>选择你的角色</h2>
+    <p>不同的角色，将展开完全不同的命运</p>
+  </div>
+  <div class="character-grid" id="char-grid"></div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Game Screen -->
+<div id="game-screen">
+  <button class="back-btn" onclick="backToSelect()">返回选择</button>
+  <div class="scene-wrapper" id="scene-wrapper"></div>
+</div>
+
+<!-- Ending Screen -->
+<div id="ending-screen">
+  <div class="ending-wrapper" id="ending-wrapper"></div>
+</div>
 
 <script>
-// ========== GAME DATA ==========
-
-const IMAGES = {
-  cover: 'images/cover.jpg',
-  crime: 'images/crime-scene.jpg',
-  corridor: 'images/corridor.jpg',
-  dining: 'images/dining-room.jpg',
-  secret: 'images/secret-room.jpg',
-  confront: 'images/confrontation.jpg',
-  dawn: 'images/dawn.jpg'
+// ========== ENDING DEFINITIONS ==========
+const ENDINGS = {
+  iron_throne: { title: '铁王座加冕', icon: '\uD83D\uDC51', image: 'images/crown.jpg',
+    text: '你统一了七国，坐上了铁王座。\n但这一把由龙焰熔铸的剑椅，比你想象的更加冰冷。\n胜利的代价，只有你自己知道。' },
+  dragonfire: { title: '龙焰焚天', icon: '\uD83D\uDD25', image: 'images/dragon.jpg',
+    text: '巨龙焚毁了旧世界的一切。\n新纪元从灰烬中升起，但整个文明也随之化为焦土。\n你赢了，但七国已不复存在。' },
+  winter: { title: '凛冬降临', icon: '\u2744', image: 'images/wall.jpg',
+    text: '异鬼吞噬了一切。\n长夜降临，永恒的寒冷覆盖了七国。\n没有人记得最后的歌声，只有风雪在空城中呼啸。' },
+  shadow: { title: '暗影之王', icon: '\uD83D\uDD77', image: 'images/throne.jpg',
+    text: '你从未坐上铁王座，但七国的每一道命令都出自你手。\n你是暗影中的王，无人知晓你的名字。\n但权力的滋味，比任何毒药都更令人沉醉。' },
+  exile: { title: '流亡天涯', icon: '\uD83C\uDF0A', image: 'images/castle.jpg',
+    text: '你失败了，但你活着。\n身后是燃烧的故土，前方是未知的东方。\n也许有一天，你会带着新的力量归来。\n也许……这就是新的开始。' },
+  hero: { title: '英雄殉国', icon: '\u2694', image: 'images/battle.jpg',
+    text: '你倒在了战场上。\n但你的牺牲为七国赢得了黎明。\n吟游诗人将永远传唱你的名字，\n直到最后一个字母消散在风中。' },
+  peace: { title: '黄金黎明', icon: '\u2600', image: 'images/crown.jpg',
+    text: '你以智慧和勇气为七国带来了和平。\n没有龙焰，没有鲜血，只有金色的黎明。\n这是最好的结局，也是最罕见的结局。' },
+  commoner_king: { title: '铁匠称王', icon: '\uD83D\uDD28', image: 'images/crown.jpg',
+    text: '你从铁匠铺走出，手握先王之剑，身后是万千平民。\n从未有出身如此卑微的人坐上铁王座。\n但正是你的平凡，让七国第一次看到了希望。\n铁匠的锤子，也可以锻造王冠。' },
+  nobody: { title: '无人', icon: '\uD83C\uDFAD', image: 'images/assassin.jpg',
+    text: '你完成了契约。千面之神取走了你的名字、你的记忆、你的过去。\n从此世间再无此人，只有千面之神的容器。\n你是风中的灰烬，水中的倒影。\n你是——无人。' },
+  reckoning: { title: '审判降临', icon: '\u2696', image: 'images/judgment.jpg',
+    text: '你的刀刃引发了连锁审判。\n一个接一个，七国的权贵倒下，不分善恶。\n当尘埃落定，空荡荡的铁王座前，只有你独自站立。\n审判的天平从不偏袒任何人——包括审判者自己。' }
 };
 
-const PROFESSIONS = [
-  {id:'forensic',name:'法医病理学家',icon:'🩺',skill:'检验尸体时自动发现毒理学细节和针孔痕迹'},
-  {id:'journalist',name:'调查记者',icon:'📰',skill:'盘问时获得额外信息，能突破心理防线'},
-  {id:'csi',name:'犯罪现场勘查员',icon:'🔍',skill:'搜查现场时发现隐藏物证，不遗漏任何细节'},
-  {id:'profiler',name:'犯罪心理侧写师',icon:'🧠',skill:'察觉微表情异常，识别说谎者，操控对质'}
+// ========== CHARACTER DEFINITIONS ==========
+const CHARACTERS = [
+  { id: 'eddard', name: '艾德·史塔克', title: '北境守护', sigil: '\uD83D\uDC3A',
+    desc: '正直的北境领主，家族信守荣誉超过生命。',
+    banner: 'linear-gradient(135deg, #2a3a4a, #1a2530)', startScene: 'eddard_1' },
+  { id: 'daenerys', name: '丹妮莉丝', title: '龙裔公主', sigil: '\uD83D\uDC09',
+    desc: '被放逐的王朝血脉，手握三颗石化龙蛋。',
+    banner: 'linear-gradient(135deg, #4a1a1a, #2a0a0a)', startScene: 'daenerys_1' },
+  { id: 'jon', name: '琼恩·雪诺', title: '守夜人', sigil: '\u2694',
+    desc: '长城上的黑衣骑士，誓言守护生者的世界。',
+    banner: 'linear-gradient(135deg, #2a2a2a, #0a0a0a)', startScene: 'jon_1' },
+  { id: 'varys', name: '瓦里斯', title: '蜘蛛', sigil: '\uD83D\uDD78',
+    desc: '宫廷情报总管，掌握着所有人的秘密。',
+    banner: 'linear-gradient(135deg, #2a1a3a, #1a0a2a)', startScene: 'varys_1' },
+  { id: 'gendry', name: '詹德利', title: '铁匠学徒', sigil: '\uD83D\uDD28',
+    desc: '君临城的铁匠学徒，不知血液中流淌着王族血脉。',
+    banner: 'linear-gradient(135deg, #3a2a1a, #2a1a0a)', startScene: 'gendry_1' },
+  { id: 'jaqen', name: '贾昆·赫加尔', title: '无面者', sigil: '\uD83C\uDFAD',
+    desc: '来自布拉佛斯的刺客，侍奉千面之神。',
+    banner: 'linear-gradient(135deg, #1a1a2a, #0a0a1a)', startScene: 'jaqen_1' }
 ];
-
-const ITEMS = [
-  {id:'magnifier',name:'放大镜',icon:'🔬',desc:'发现微小痕迹、毒物结晶、暗藏文字'},
-  {id:'recorder',name:'录音笔',icon:'🎙️',desc:'记录对话回放，捕捉遗漏的细节与口误'},
-  {id:'photo',name:'旧照片',icon:'📸',desc:'与旧案相关，揭示人物间的隐秘联系'},
-  {id:'key',name:'万能钥匙',icon:'🗝️',desc:'开启锁闭房间，获取被藏匿的证据'}
-];
-
-const SUSPECTS = [
-  {id:'yuqing',name:'陈雨晴',role:'女儿',icon:'👧',color:'#9b6b9e',
-   desc:'32岁，陈伯远独女，背负巨额赌债'},
-  {id:'zhiyuan',name:'方志远',role:'合伙人',icon:'👔',color:'#4a6b9e',
-   desc:'50岁，生意伙伴，被查出侵吞公司资金'},
-  {id:'wanrong',name:'赵婉容',role:'续弦',icon:'👩',color:'#9e4a6b',
-   desc:'40岁，第二任妻子，即将被改遗嘱'},
-  {id:'dechang',name:'李德昌',role:'管家',icon:'🤵',color:'#6b5b3e',
-   desc:'55岁，侍奉20年的老管家，近期被降职'},
-  {id:'mingxuan',name:'张明轩',role:'学徒',icon:'🧑',color:'#4a8e6b',
-   desc:'28岁，陈伯远的关门弟子，身世神秘'},
-  {id:'huizhen',name:'孙慧珍',role:'私人医生',icon:'🩺',color:'#4a8e8e',
-   desc:'45岁，家庭医生，被陈伯远发现医疗事故'}
-];
-
-// The truth: 5 actual killers + 1 attempted on corpse
-const KILLERS = {
-  zhiyuan: {method:'在晚宴红酒中下乌头碱',time:'晚8:30',evidence:'ev_aconitine'},
-  huizhen: {method:'假借医疗注射过量胰岛素',time:'晚9:00',evidence:'ev_insulin'},
-  yuqing: {method:'在降压药中掺入氯化钾',time:'晚9:30',evidence:'ev_potassium'},
-  dechang: {method:'用裁纸刀刺了三刀（人已昏迷）',time:'晚10:00',evidence:'ev_stab'},
-  mingxuan: {method:'长期投慢性毒药（三周以上）',time:'持续',evidence:'ev_chronic'},
-  wanrong: {method:'试图用枕头捂死（但人已死）',time:'晚10:30',evidence:'ev_pillow',attempted:true}
-};
-
-const EVIDENCE = {
-  ev_wine_residue:{title:'碎酒杯残留',detail:'红酒杯碎片上检测到苦味物质，疑似乌头碱'},
-  ev_blood_trail:{title:'血迹拖痕',detail:'从书桌到门口有拖拽血迹，死后被移动过'},
-  ev_will_draft:{title:'遗嘱修改草稿',detail:'书桌上发现遗嘱草稿，赵婉容将被剔除继承权'},
-  ev_window_footprint:{title:'窗台脚印',detail:'窗台上有新鲜泥土脚印，有人从窗外进出'},
-  ev_stab_details:{title:'三处刀伤',detail:'腹部三处刺伤，角度各不相同，来自不同方向'},
-  ev_neck_marks:{title:'颈部淤青',detail:'颈部有长条形淤痕，边缘有织物纹理压痕'},
-  ev_injection_marks:{title:'手臂针孔',detail:'左臂内侧两个针孔，位置和角度不同'},
-  ev_aconitine:{title:'乌头碱中毒',detail:'胃内容物检出乌头碱——一种剧烈心脏毒素'},
-  ev_potassium:{title:'高钾血症',detail:'血液钾离子浓度远超致死量，导致心脏骤停'},
-  ev_chronic_poison:{title:'慢性肝损伤',detail:'肝脏有长期毒物代谢痕迹，至少持续三周'},
-  ev_insulin:{title:'异常胰岛素',detail:'额外针孔注射的是过量胰岛素，非医疗需要'},
-  ev_timeline:{title:'当晚时间线',detail:'各人活动时间存在交叉与空白'},
-  ev_demotion_motive:{title:'管家降职信',detail:'李德昌因一次"失误"被降薪降职，心生怨恨'},
-  ev_gambling_debt:{title:'赌债借条',detail:'陈雨晴欠下赌场280万，三天内必须偿还'},
-  ev_medication_tamper:{title:'降压药异常',detail:'降压药胶囊颜色异常，被替换过'},
-  ev_daughter_confession:{title:'女儿失言',detail:'陈雨晴说漏嘴："他吃药的时候已经..."'},
-  ev_medical_record:{title:'医疗记录矛盾',detail:'孙慧珍的注射记录与陈伯远的实际需求不符'},
-  ev_embezzlement:{title:'财务造假文件',detail:'方志远伪造账目侵吞公司800万'},
-  ev_wine_serving:{title:'倒酒细节',detail:'方志远当晚亲手为陈伯远倒了红酒'},
-  ev_apprentice_nervous:{title:'学徒异常',detail:'张明轩的手在颤抖，眼神回避'},
-  ev_father_connection:{title:'旧案关联',detail:'照片中的年轻人与张明轩高度相似'},
-  ev_will_beneficiary:{title:'遗嘱受益人',detail:'赵婉容是当前遗嘱的最大受益人'},
-  ev_wife_whereabout:{title:'赵婉容行踪',detail:'赵婉容声称10点在房间，但走廊有她的身影'},
-  ev_old_case_file:{title:'二十年前旧案',detail:'陈伯远曾涉嫌古董造假，导致一人含冤入狱致死'},
-  ev_father_letter:{title:'父亲遗书',detail:'张明轩房间藏有生父遗书，控诉陈伯远的罪行'},
-  ev_identity_reveal:{title:'身份揭穿',detail:'旧照片比对确认：张明轩真名刘子谦，乃旧案受害者之子'},
-  ev_will_copy:{title:'遗嘱副本',detail:'赵婉容房间藏有遗嘱副本，用红笔标注了继承份额'},
-  ev_hidden_pillow:{title:'藏匿的枕头',detail:'赵婉容衣柜深处藏着一个枕头，上面有微弱血迹'},
-  ev_climbing_mark:{title:'攀爬痕迹',detail:'窗外墙壁有刮痕，有人从花园攀爬至书房'},
-  ev_secret_letter:{title:'秘密信件',detail:'书桌暗格中有一封恐吓信："你还欠一条命"'},
-  ev_poison_residue:{title:'毒物残留',detail:'张明轩房间发现微量白色粉末，经检测为慢性毒药'},
-  ev_weapon_match:{title:'凶器比对',detail:'裁纸刀与刀伤宽度吻合，刀柄上有李德昌的指纹'},
-  ev_postmortem_stab:{title:'死后刺伤',detail:'三处刀伤几乎无生活反应，刺入时人已死亡或濒死'},
-  ev_pillow_fiber:{title:'枕头纤维',detail:'颈部压痕的织物纤维与赵婉容房间的枕头一致'},
-  ev_blood_pool:{title:'地毯血迹',detail:'地毯下有大量血迹渗透，尸体曾被拖动'},
-  ev_old_case_photo:{title:'旧案照片',detail:'一张二十年前的合影，陈伯远与一个含冤而死的人并肩而立'}
-};
 
 // ========== SCENE GRAPH ==========
-
 const SCENES = {
-
-title:{
-  bg:IMAGES.cover,
-  render(){
-    return `<div class="title-screen">
-      <h1>雨夜山庄</h1>
-      <div class="subtitle">三 刀 两 毒</div>
-      <div class="desc">暴风雨之夜，深山中的听雨山庄。<br>
-      古董商陈伯远被发现死于书房，表面是心脏病发作。<br>
-      但真相远比想象的黑暗——<br>
-      <span class="clue">这一夜，不止一个人动了杀心。</span></div>
-      <button class="btn-start" onclick="startGame()">开始调查</button>
-    </div>`;
-  }
-},
-
-profession_draw:{
-  bg:IMAGES.cover,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">命运抽卡</div>
-      <div class="scene-text">在踏入听雨山庄之前，你的身份将决定你能看到什么。
-点击卡牌，抽取你的调查身份。</div>
-      <div class="card-deck">
-        <div class="prof-card" id="profCard" onclick="flipCard()">
-          <div class="face front"><span class="card-back-pattern">🌧️</span></div>
-          <div class="face back" id="profBack"></div>
-        </div>
-      </div>
-      <div id="profConfirm" style="display:none;text-align:center;margin-top:16px">
-        <button class="btn-start" style="font-size:.95em;padding:10px 32px" onclick="confirmProfession()">确认身份</button>
-      </div>
-    </div>`;
-  }
-},
-
-item_select:{
-  bg:IMAGES.cover,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">选择关键道具</div>
-      <div class="scene-text">你只能带一件工具进入山庄。选择 wisely——它将解锁特定的调查路线。</div>
-      <div class="item-grid">
-        ${ITEMS.map(it=>`
-          <div class="item-card" onclick="selectItem('${it.id}')" id="item-${it.id}">
-            <div class="item-icon">${it.icon}</div>
-            <div class="item-name">${it.name}</div>
-            <div class="item-desc">${it.desc}</div>
-          </div>`).join('')}
-      </div>
-      <div style="text-align:center;margin-top:16px">
-        <button class="btn-start" style="font-size:.95em;padding:10px 32px" id="itemConfirm"
-          onclick="confirmItem()" disabled style="opacity:.4;cursor:not-allowed">开始调查</button>
-      </div>
-    </div>`;
-  }
-},
-
-act1_intro:{
-  bg:IMAGES.cover,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">第一幕 · 初探现场</div>
-      <div class="progress-bar"><div class="fill" style="width:15%"></div></div>
-      <div class="scene-text">暴雨如注。你的车在泥泞的山路上颠簸了近两个小时，终于抵达听雨山庄。
-
-管家李德昌在门口迎接你，面容憔悴："先生，老爷他……走了。医生说是心脏病。"
-
-你环顾山庄大厅。壁炉里的火已经灭了，空气中弥漫着一股说不清的苦涩。六个人都还在山庄里——暴风雨切断了下山的路，他们哪里也去不了。
-
-你面前有三个选择：</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('a1')">
-          📍 <b>勘查书房现场</b>——从犯罪现场物证开始
-          <span class="lock-hint">适合：犯罪现场勘查员、持放大镜</span>
-        </button>
-        <button class="choice-btn" onclick="go('b1')">
-          🩺 <b>检验尸体</b>——从法医学角度切入
-          <span class="lock-hint">适合：法医病理学家</span>
-        </button>
-        <button class="choice-btn" onclick="go('c1')">
-          💬 <b>盘问嫌疑人</b>——从人物动机入手
-          <span class="lock-hint">适合：调查记者、犯罪心理侧写师</span>
-        </button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ACT 1 ROUTE A: CRIME SCENE =====
-a1:{
-  bg:IMAGES.crime,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">书房 · 犯罪现场</div>
-      <div class="progress-bar"><div class="fill" style="width:20%"></div></div>
-      <div class="scene-text">你推开书房沉重的橡木门。空气浑浊，混合着红酒、灰尘和某种苦涩的气味。
-
-陈伯远的遗体已被移至偏厅，但地上的粉笔轮廓还在。书桌凌乱不堪，一支<span class="highlight">裁纸刀</span>掉落在地，旁边是<span class="highlight">碎裂的酒杯</span>，暗红色的液体在地毯上洇开一片。窗台上有新鲜的泥土痕迹。
-
-你的目光在房间里扫过，需要决定先检查哪里。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('a1_floor')">
-          蹲下检查碎酒杯和地面血迹
-          ${st.isItem('magnifier')?'<span class="tag tag-item">放大镜</span>':''}
-          ${st.isProf('csi')?'<span class="tag tag-prof">勘查员</span>':''}
-        </button>
-        <button class="choice-btn" onclick="go('a1_desk')">
-          翻开书桌上的文件和抽屉
-          ${st.isProf('csi')?'<span class="tag tag-prof">勘查员</span>':''}
-        </button>
-        <button class="choice-btn" onclick="go('a1_window')">
-          检查窗台的泥土脚印
-          ${st.isItem('magnifier')?'<span class="tag tag-item">放大镜</span>':''}
-        </button>
-      </div>
-    </div>`;
-  }
-},
-
-a1_floor:{
-  bg:IMAGES.crime,
-  onEnter(){st.addEv('ev_wine_residue');st.addEv('ev_blood_trail');
-    if(st.isItem('magnifier'))st.addEv('ev_poison_residue');
-    if(st.isProf('csi'))st.addEv('ev_weapon_match');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_poison_residue'))extra+='\n\n<span class="clue">放大镜下，酒杯碎片边缘附着微小的白色结晶——这是毒物残留。</span>';
-    if(st.hasEv('ev_weapon_match'))extra+='\n\n<span class="clue">作为勘查员，你注意到裁纸刀上的指纹纹路粗大——管家李德昌的手。刀刃宽度与地上的血迹形态吻合。</span>';
-    return `<div class="scene-card">
-      <div class="scene-title">碎裂的酒杯</div>
-      <div class="progress-bar"><div class="fill" style="width:25%"></div></div>
-      <div class="scene-text">你蹲下身，手电筒照向碎裂的酒杯。暗红色的酒液已经半干，散发出一股明显的苦味——这不正常。红酒不该有这种味道。
-
-地面上，从书桌到门口有一道拖拽状的血迹。尸体死后被移动过。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('a1_desk')">继续检查书桌上的文件</button>
-        <button class="choice-btn" onclick="go('a1_window')">转向检查窗台</button>
-        <button class="choice-btn" onclick="go('a1_end')" style="border-color:var(--accent)">结束现场勘查，整理发现</button>
-      </div>
-    </div>`;
-  }
-},
-
-a1_desk:{
-  bg:IMAGES.crime,
-  onEnter(){st.addEv('ev_will_draft');st.addEv('ev_secret_letter');
-    if(st.isProf('csi'))st.addEv('ev_blood_pool');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_secret_letter'))extra+='\n\n<span class="clue">你拉开抽屉最深处，触到一个暗格。里面只有一封信，没有署名：<span class="danger">"你还欠一条命。"</span> 字迹歪斜，透着刻骨的恨意。';
-    if(st.hasEv('ev_blood_pool'))extra+='\n\n<span class="clue">勘查员的直觉让你掀开地毯——下方有大量血迹渗透，远超体表伤口的出血量。尸体在书房内被刺后又被拖动。';
-    return `<div class="scene-card">
-      <div class="scene-title">书桌上的秘密</div>
-      <div class="progress-bar"><div class="fill" style="width:25%"></div></div>
-      <div class="scene-text">书桌上摊开着一份文件——遗嘱修改草稿。你的目光扫过条款，发现<span class="highlight">赵婉容的名字被用红笔画了叉</span>，旁边写着"取消继承"。看来陈伯远打算改遗嘱，而赵婉容对此一无所知。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('a1_floor')">检查地面碎酒杯</button>
-        <button class="choice-btn" onclick="go('a1_window')">转向检查窗台</button>
-        <button class="choice-btn" onclick="go('a1_end')" style="border-color:var(--accent)">结束现场勘查，整理发现</button>
-      </div>
-    </div>`;
-  }
-},
-
-a1_window:{
-  bg:IMAGES.crime,
-  onEnter(){st.addEv('ev_window_footprint');
-    if(st.isItem('magnifier'))st.addEv('ev_climbing_mark');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_climbing_mark'))extra+='\n\n<span class="clue">放大镜下，窗框外侧有新鲜刮痕——有人从花园攀爬至二楼书房窗口。泥土中的脚印是42码左右，不属于穿拖鞋的陈伯远。';
-    return `<div class="scene-card">
-      <div class="scene-title">窗台的脚印</div>
-      <div class="progress-bar"><div class="fill" style="width:25%"></div></div>
-      <div class="scene-text">窗台上有一组新鲜的泥土脚印，鞋底花纹清晰——这不是室内拖鞋的痕迹。有人从外面爬进了书房。窗外的雨还在下，但脚印上的泥土还是湿的，说明<span class="highlight">就在几小时前</span>。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('a1_floor')">检查地面碎酒杯</button>
-        <button class="choice-btn" onclick="go('a1_desk')">继续检查书桌文件</button>
-        <button class="choice-btn" onclick="go('a1_end')" style="border-color:var(--accent)">结束现场勘查，整理发现</button>
-      </div>
-    </div>`;
-  }
-},
-
-a1_end:{
-  bg:IMAGES.corridor,
-  onEnter(){st.setFlag('act1','A');},
-  render(){
-    const evCount=st.evCount();
-    return `<div class="scene-card">
-      <div class="scene-title">现场勘查总结</div>
-      <div class="progress-bar"><div class="fill" style="width:33%"></div></div>
-      <div class="scene-text">你站起身，在脑中梳理书房的发现：
-
-<span class="clue">碎酒杯中的苦味物质——可能是毒药。裁纸刀上有管家的指纹。遗嘱被修改，赵婉容将被剔除。窗台有外来者的脚印。有人从窗外进入。书桌暗格中有恐吓信。</span>
-
-这些线索交织在一起，指向一个令人不安的方向——<span class="danger">这不是简单的心脏病发作。</span>
-
-你收集了 ${evCount} 条证据。是时候进入下一阶段调查了。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('act2_choice')" style="border-color:var(--accent)">进入第二幕调查 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ACT 1 ROUTE B: BODY EXAM =====
-b1:{
-  bg:IMAGES.crime,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">偏厅 · 检验尸体</div>
-      <div class="progress-bar"><div class="fill" style="width:20%"></div></div>
-      <div class="scene-text">陈伯远的遗体停放在山庄偏厅。你戴上手套，拉开白布。
-
-表面看，这是一个肥胖的六十五岁老人，面色青紫，嘴唇发黑。初步看像是心衰。但当你翻开衣领，<span class="danger">三处触目惊心的刀伤</span>暴露在灯光下。更诡异的是，颈部有明显的<span class="highlight">长条形淤青</span>。你抬起他的左臂——内侧两个微小的<span class="highlight">针孔</span>若隐若现。
-
-你需要决定从哪里开始详细检查。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('b1_wounds')">
-          测量三处刀伤的角度和深度
-          ${st.isProf('forensic')?'<span class="tag tag-prof">法医</span>':''}
-        </button>
-        <button class="choice-btn" onclick="go('b1_neck')">
-          检查颈部淤青的形状和来源
-          ${st.isItem('magnifier')?'<span class="tag tag-item">放大镜</span>':''}
-        </button>
-        <button class="choice-btn" onclick="go('b1_arms')">
-          追溯两个针孔的来源
-          ${st.isProf('forensic')?'<span class="tag tag-prof">法医</span>':''}
-        </button>
-      </div>
-    </div>`;
-  }
-},
-
-b1_wounds:{
-  bg:IMAGES.crime,
-  onEnter(){st.addEv('ev_stab_details');st.addEv('ev_weapon_match');
-    if(st.isProf('forensic'))st.addEv('ev_postmortem_stab');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_postmortem_stab'))extra+='\n\n<span class="clue">法医的专业判断：三处刀伤几乎无生活反应——伤口边缘没有明显的炎症充血，出血量极少。这意味着刺入时，陈伯远已经死亡或濒临死亡。刀伤是死后伤。';
-    return `<div class="scene-card">
-      <div class="scene-title">三处刀伤</div>
-      <div class="progress-bar"><div class="fill" style="width:25%"></div></div>
-      <div class="scene-text">三处刀伤分布在腹部，但角度截然不同——一刀从左上方刺入，一刀几乎水平，第三刀从右下方刺入。这意味着凶手在刺的过程中不断变换位置，或使用了不同的站位。
-
-刀口的宽度也不完全一致，暗示可能使用了不同的利器，或同一利器在不同角度下造成了不同创口。刀柄上残留的指纹属于管家<span class="highlight">李德昌</span>。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('b1_neck')">检查颈部淤青</button>
-        <button class="choice-btn" onclick="go('b1_arms')">追溯针孔来源</button>
-        <button class="choice-btn" onclick="go('b2_tox')" style="border-color:var(--accent)">进入毒理学检测 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-b1_neck:{
-  bg:IMAGES.crime,
-  onEnter(){st.addEv('ev_neck_marks');
-    if(st.isItem('magnifier'))st.addEv('ev_pillow_fiber');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_pillow_fiber'))extra+='\n\n<span class="clue">放大镜下，淤痕边缘嵌着细小的织物纤维——棉质，白色，与枕头面料一致。有人用枕头按住了他的面部。但尸检没有窒息征象，按住时人已经没有呼吸。';
-    return `<div class="scene-card">
-      <div class="scene-title">颈部淤青</div>
-      <div class="progress-bar"><div class="fill" style="width:25%"></div></div>
-      <div class="scene-text">颈部的淤青呈长条形，宽约8厘米，边缘有织物纹理的压痕。这不像是被手掐的——更像是被某种柔软的平面物体按压。
-
-你检查口腔和面部——没有明显的窒息征象，嘴唇发紫但不是因为缺氧。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('b1_wounds')">测量刀伤</button>
-        <button class="choice-btn" onclick="go('b1_arms')">追溯针孔来源</button>
-        <button class="choice-btn" onclick="go('b2_tox')" style="border-color:var(--accent)">进入毒理学检测 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-b1_arms:{
-  bg:IMAGES.crime,
-  onEnter(){st.addEv('ev_injection_marks');
-    if(st.isProf('forensic'))st.addEv('ev_insulin');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_insulin'))extra+='\n\n<span class="clue">法医的专业判断：对比陈伯远的用药记录，他当晚不需要注射胰岛素。那个额外针孔注射的是过量胰岛素——足以导致致命的低血糖昏迷。';
-    return `<div class="scene-card">
-      <div class="scene-title">两个针孔</div>
-      <div class="progress-bar"><div class="fill" style="width:25%"></div></div>
-      <div class="scene-text">左臂内侧有两个针孔。一个在肘窝处——标准医疗注射位置；另一个在前臂下方，位置偏下且角度奇怪，显然不是正规医护人员的操作。
-
-这意味着有两个人分别给他注射了东西——一个可能是正常的医疗行为，另一个则不是。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('b1_wounds')">测量刀伤</button>
-        <button class="choice-btn" onclick="go('b1_neck')">检查颈部淤青</button>
-        <button class="choice-btn" onclick="go('b2_tox')" style="border-color:var(--accent)">进入毒理学检测 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-b2_tox:{
-  bg:IMAGES.secret,
-  onEnter(){st.addEv('ev_aconitine');st.addEv('ev_potassium');
-    if(st.isProf('forensic'))st.addEv('ev_chronic_poison');
-    st.setFlag('act1','B');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_chronic_poison'))extra+='\n\n<span class="clue">法医的深层分析：肝脏组织中检出慢性毒物代谢产物——这不是一次性投毒，而是至少持续三周以上的低剂量慢性中毒。长期暴露严重削弱了陈伯远的心脏功能，使他成为多种急性毒素的"完美猎物"。';
-    return `<div class="scene-card">
-      <div class="scene-title">毒理学检测</div>
-      <div class="progress-bar"><div class="fill" style="width:33%"></div></div>
-      <div class="scene-text">你利用山庄简陋的化验设备进行了快速毒理检测。结果令人震惊——<span class="danger">不是一种毒，是三种</span>。
-
-第一，胃内容物中检出<span class="highlight">乌头碱</span>——一种剧烈心脏毒素，存在于中药附子中，少量即可致死。
-
-第二，血液中<span class="highlight">钾离子浓度</span>远超致死量，这会导致心脏骤停。
-
-第三，额外针孔处检出<span class="highlight">过量胰岛素</span>。
-
-三种不同的毒物，通过三种不同的途径进入体内。这意味着——<span class="danger">至少有三个人分别下了毒。</span>${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('act2_choice')" style="border-color:var(--accent)">进入第二幕调查 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ACT 1 ROUTE C: INTERROGATION =====
-c1:{
-  bg:IMAGES.dining,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">餐厅 · 盘问嫌疑人</div>
-      <div class="progress-bar"><div class="fill" style="width:20%"></div></div>
-      <div class="scene-text">你将六名嫌疑人召集到餐厅。长桌两侧，六个人各怀心事。壁炉里的火忽明忽暗，映照着他们不安的面孔。
-
-${SUSPECTS.map(s=>`<div class="char-row">
-  <div class="char-avatar" style="background:${s.color}33;border-color:${s.color}">${s.icon}</div>
-  <div class="char-info"><span class="char-name">${s.name}</span> · <span style="color:var(--dim)">${s.role}</span>
-  <div class="char-desc">${s.desc}</div></div></div>`).join('')}
-
-你需要先从谁开始盘问？</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('c1_butler')">盘问管家李德昌</button>
-        <button class="choice-btn" onclick="go('c1_daughter')">
-          盘问女儿陈雨晴
-          ${st.isProf('journalist')?'<span class="tag tag-prof">记者</span>':''}
-          ${st.isProf('profiler')?'<span class="tag tag-prof">心理师</span>':''}
-        </button>
-        <button class="choice-btn" onclick="go('c1_doctor')">
-          盘问医生孙慧珍
-          ${st.isProf('profiler')?'<span class="tag tag-prof">心理师</span>':''}
-        </button>
-      </div>
-    </div>`;
-  }
-},
-
-c1_butler:{
-  bg:IMAGES.dining,
-  onEnter(){st.addEv('ev_timeline');st.addEv('ev_demotion_motive');},
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">盘问 · 李德昌</div>
-      <div class="progress-bar"><div class="fill" style="width:25%"></div></div>
-      <div class="scene-text">李德昌坐在你对面，双手交叉放在膝上。他在这个山庄侍奉了二十年，但最近被降职降薪。
-
-"老爷最近脾气很大。"他的声音沙哑，"上个月因为一件古董的鉴定失误，把我从大管家降成了杂役。二十年了……"
-
-他提供的当晚时间线：
-<span class="highlight">晚7:30</span> 晚宴开始，所有人就座
-<span class="highlight">晚8:45</span> 陈伯远说身体不适，提前离席回书房
-<span class="highlight">晚9:00-10:00</span> 各人分散活动
-<span class="highlight">晚10:30</span> 赵婉容发现陈伯远倒在书房地板上
-
-"我十点左右去书房送药，敲了门没人应。"他的目光闪烁，"我以为老爷睡了，就走了。"</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('c1_daughter')">继续盘问女儿陈雨晴</button>
-        <button class="choice-btn" onclick="go('c1_doctor')">继续盘问医生孙慧珍</button>
-        <button class="choice-btn" onclick="go('c1_end')" style="border-color:var(--accent)">结束盘问，整理发现</button>
-      </div>
-    </div>`;
-  }
-},
-
-c1_daughter:{
-  bg:IMAGES.dining,
-  onEnter(){st.addEv('ev_gambling_debt');st.addEv('ev_medication_tamper');
-    if(st.isProf('journalist'))st.addEv('ev_daughter_confession');
-    if(st.isProf('profiler'))st.addEv('ev_daughter_confession');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_daughter_confession')){
-      const src=st.isProf('journalist')?'记者的信息渠道' : '心理师的读心术';
-      extra=`\n\n<span class="clue">${src}让你察觉到她在说谎。你追问："你知道你父亲的降压药被换过吗？"她的瞳孔骤然收缩，嘴唇颤抖："他吃药的时候已经……已经不对了……"她猛然住嘴，意识到自己说多了。</span>`;
-    }
-    return `<div class="scene-card">
-      <div class="scene-title">盘问 · 陈雨晴</div>
-      <div class="progress-bar"><div class="fill" style="width:25%"></div></div>
-      <div class="scene-text">陈雨晴32岁，化着浓妆但掩盖不住眼下的黑眼圈。她的手指不停摩挲着手机壳。
-
-"我和爸爸关系不好，但我不会害他。"她的声音带着一丝不耐烦，"我有自己的事要忙。"
-
-你注意到她的包里露出一张借条的边角——赌场的借条。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('c1_butler')">继续盘问管家李德昌</button>
-        <button class="choice-btn" onclick="go('c1_doctor')">继续盘问医生孙慧珍</button>
-        <button class="choice-btn" onclick="go('c1_end')" style="border-color:var(--accent)">结束盘问，整理发现</button>
-      </div>
-    </div>`;
-  }
-},
-
-c1_doctor:{
-  bg:IMAGES.dining,
-  onEnter(){st.addEv('ev_medical_record');
-    if(st.isProf('profiler'))st.addEv('ev_insulin');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_insulin'))extra='\n\n<span class="clue">心理侧写师的直觉：她的微表情出卖了她——说到"注射"时她的右手无名指微微抽搐，这是说谎者控制不住的生理反应。你追问注射剂量，她含糊其辞，数字前后矛盾。过量胰岛素。她在隐瞒什么。</span>';
-    return `<div class="scene-card">
-      <div class="scene-title">盘问 · 孙慧珍</div>
-      <div class="progress-bar"><div class="fill" style="width:25%"></div></div>
-      <div class="scene-text">孙慧珍45岁，穿着白大褂，看起来镇定专业。但她的手在端茶杯时微微颤抖。
-
-"陈先生有严重的心脏病史和高血压，"她推了推眼镜，"当晚8点左右我给他做了例行检查，注射了常规药物。9点他说不舒服，我建议他回房休息。"
-
-你要求查看医疗记录。她犹豫了一下，递过来。记录上写的是常规心血管药物注射，但注射时间写着"8:00 pm"，而你从管家那里得知晚宴7:30才开始，陈伯远一直在餐桌上到8:45。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('c1_butler')">继续盘问管家李德昌</button>
-        <button class="choice-btn" onclick="go('c1_daughter')">继续盘问女儿陈雨晴</button>
-        <button class="choice-btn" onclick="go('c1_end')" style="border-color:var(--accent)">结束盘问，整理发现</button>
-      </div>
-    </div>`;
-  }
-},
-
-c1_end:{
-  bg:IMAGES.corridor,
-  onEnter(){st.setFlag('act1','C');
-    st.addEv('ev_embezzlement');st.addEv('ev_wine_serving');
-    st.addEv('ev_apprentice_nervous');st.addEv('ev_will_beneficiary');},
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">盘问总结</div>
-      <div class="progress-bar"><div class="fill" style="width:33%"></div></div>
-      <div class="scene-text">你结束了对主要嫌疑人的盘问，心中已有初步判断：
-
-<span class="clue">管家李德昌——有降职的怨恨动机，声称10点去送药但无人应门。
-女儿陈雨晴——背负赌债，知道父亲药被换过。
-医生孙慧珍——医疗记录时间矛盾，注射行为可疑。
-合伙人方志远——当晚亲手为陈伯远倒了红酒，公司财务造假。
-学徒张明轩——沉默寡言，手在颤抖，眼神回避。
-续弦赵婉容——遗嘱最大受益人，行踪有空白。</span>
-
-<span class="danger">六个人，六个动机，六个可疑的时间段。</span>
-
-你收集了 ${st.evCount()} 条证据。进入下一阶段。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('act2_choice')" style="border-color:var(--accent)">进入第二幕调查 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ACT 2 CHOICE =====
-act2_choice:{
-  bg:IMAGES.corridor,
-  render(){
-    const act1=st.getFlag('act1');
-    let dLock=!(act1==='A'||act1==='B');
-    let eLock=!(act1==='A'||act1==='B');
-    let fLock=!(act1==='A'||act1==='C');
-    return `<div class="scene-card">
-      <div class="scene-title">第二幕 · 深入调查</div>
-      <div class="progress-bar"><div class="fill" style="width:35%"></div></div>
-      <div class="scene-text">暴风雨愈演愈烈。山庄的电力时断时续，蜡烛在走廊里投下摇晃的影子。
-
-你手中的证据已经勾勒出一个危险的轮廓——这不是单一凶手，可能有多人参与。但你还需要更深入的物证和分析。
-
-三条深入调查路线在你面前展开${(dLock||eLock||fLock)?'（部分路线因第一幕的选择而锁定）':''}：</div>
-      <div class="choices">
-        <button class="choice-btn ${dLock?'locked':''}" ${dLock?'':'onclick="go(\'d1\')"'} >
-          🧪 <b>追查毒物来源</b>——分离和追溯每种毒素的投放者
-          ${dLock?'<span class="lock-hint">⚠️ 需要第一幕选择勘查现场或检验尸体</span>':''}
-        </button>
-        <button class="choice-btn ${eLock?'locked':''}" ${eLock?'':'onclick="go(\'e1\')"'} >
-          🔪 <b>分析伤口与痕迹</b>——比对凶器、针孔和窒息痕迹
-          ${eLock?'<span class="lock-hint">⚠️ 需要第一幕选择勘查现场或检验尸体</span>':''}
-        </button>
-        <button class="choice-btn ${fLock?'locked':''}" ${fLock?'':'onclick="go(\'f1\')"'} >
-          🔦 <b>暗访夜间搜查</b>——趁夜色搜查嫌疑人房间
-          ${fLock?'<span class="lock-hint">⚠️ 需要第一幕选择勘查现场或盘问</span>':''}
-        </button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ACT 2 ROUTE D: TRACE POISONS =====
-d1:{
-  bg:IMAGES.secret,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">追查毒物 · 酒杯与药物</div>
-      <div class="progress-bar"><div class="fill" style="width:40%"></div></div>
-      <div class="scene-text">你回到书房物证前。碎裂的酒杯中还残留着暗红色液体——那股苦涩更加明显了。<span class="highlight">乌头碱</span>。
-
-与此同时，你注意到陈伯远的降压药瓶。倒出来的胶囊颜色比正常药品略深，掰开一粒，里面是白色结晶——<span class="highlight">氯化钾</span>。有人替换了他的降压药。
-
-两种毒，两种投放方式——红酒和药物。这意味着至少两个投毒者。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('d2')">
-          追查红酒中乌头碱的投放者
-          ${st.isProf('forensic')?'<span class="tag tag-prof">法医</span>':''}
-        </button>
-        <button class="choice-btn" onclick="go('d2_alt')">
-          追查降压药中氯化钾的替换者
-          ${st.isItem('magnifier')?'<span class="tag tag-item">放大镜</span>':''}
-        </button>
-      </div>
-    </div>`;
-  }
-},
-
-d2:{
-  bg:IMAGES.secret,
-  onEnter(){st.addEv('ev_wine_serving');
-    if(st.isProf('forensic'))st.addEv('ev_poison_residue');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_poison_residue'))extra='\n\n<span class="clue">法医的深入分析：你在方志远房间的酒柜中发现了同款红酒，瓶壁内侧检出乌头碱残留。他提前在酒瓶中也做了手脚，确保陈伯远喝下的是毒酒。</span>';
-    return `<div class="scene-card">
-      <div class="scene-title">乌头碱的来源</div>
-      <div class="progress-bar"><div class="fill" style="width:45%"></div></div>
-      <div class="scene-text">你追查当晚红酒的来源。管家证实，<span class="highlight">方志远</span>主动提出开一瓶珍藏红酒，并亲手为陈伯远斟酒。
-
-乌头碱溶于酒精后苦味会被红酒的单宁掩盖，但会在30-60分钟后发作——刚好在陈伯远回到书房后。
-
-方志远有充分的动机：公司审计即将揭露他侵吞800万的罪行，而陈伯远正准备起诉他。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('d3')">继续追查慢性毒物</button>
-        ${!st.hasEv('ev_potassium')?'<button class="choice-btn" onclick="go(\'d2_alt\')">追查降压药替换者</button>':''}
-      </div>
-    </div>`;
-  }
-},
-
-d2_alt:{
-  bg:IMAGES.secret,
-  onEnter(){st.addEv('ev_medication_tamper');},
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">氯化钾的来源</div>
-      <div class="progress-bar"><div class="fill" style="width:45%"></div></div>
-      <div class="scene-text">降压药瓶中的胶囊被替换成了氯化钾——大量摄入会导致高钾血症，引发心脏骤停。
-
-你检查药瓶的取药记录。管家说陈伯远每晚9:30准时服药，由<span class="highlight">陈雨晴</span>负责将药送到书房。
-
-陈雨晴有充分的动机：背负赌场280万赌债，三天内必须偿还，而父亲拒绝替她还钱。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('d3')">继续追查慢性毒物</button>
-        ${!st.hasEv('ev_wine_serving')?'<button class="choice-btn" onclick="go(\'d2\')">追查红酒投毒者</button>':''}
-      </div>
-    </div>`;
-  }
-},
-
-d3:{
-  bg:IMAGES.secret,
-  onEnter(){st.addEv('ev_chronic_poison');st.addEv('ev_poison_residue');
-    if(st.isItem('photo'))st.addEv('ev_identity_reveal');
-    st.setFlag('act2','D');},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_identity_reveal'))extra='\n\n<span class="clue">旧照片的比对让你震惊——张明轩的面容与二十年前旧案中含冤入狱致死的刘姓古董商极为相似。照片背面写着"刘子谦，吾儿"。张明轩真名刘子谦，是旧案受害者之子！</span>';
-    return `<div class="scene-card">
-      <div class="scene-title">慢性毒物的发现</div>
-      <div class="progress-bar"><div class="fill" style="width:50%"></div></div>
-      <div class="scene-text">你不满足于两种急性毒。肝脏中的慢性毒物代谢产物指向一种持续至少三周的投毒行为——每天微量，让心脏逐渐衰竭。
-
-谁能在三周内持续接触陈伯远的日常饮食或药物？
-
-你搜查了山庄厨房和茶水间。在<span class="highlight">张明轩</span>负责的茶叶罐底部，你发现了白色粉末残留——与慢性毒物成分一致。
-
-学徒张明轩每天为师父泡茶。三周，每一天。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('act3_intro')" style="border-color:var(--accent)">进入第三幕 · 真相浮现 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ACT 2 ROUTE E: WOUND ANALYSIS =====
-e1:{
-  bg:IMAGES.crime,
-  onEnter(){st.addEv('ev_stab_details');st.addEv('ev_weapon_match');},
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">伤口分析 · 刀具比对</div>
-      <div class="progress-bar"><div class="fill" style="width:40%"></div></div>
-      <div class="scene-text">你重新检查三处刀伤。通过模具比对，三处创口的宽度略有差异——第一刀和第三刀宽度一致，对应书房地上的裁纸刀；第二刀更窄，可能来自一把手术刀片。
-
-裁纸刀刀柄上的指纹属于管家<span class="highlight">李德昌</span>。而手术刀片的来源——你想到了私人医生孙慧珍。
-
-${st.hasEv('ev_postmortem_stab')?'<span class="clue">法医判断确认：三处刀伤几乎无生活反应，是死后伤。刺入时陈伯远已死亡或濒死。</span>':'<span class="thought">如果你有法医专业，或许能判断刺入时间……</span>'}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('e2')">追溯异常针孔来源</button>
-        <button class="choice-btn" onclick="go('e3')">追溯颈部枕头痕迹</button>
-      </div>
-    </div>`;
-  }
-},
-
-e2:{
-  bg:IMAGES.secret,
-  onEnter(){st.addEv('ev_insulin');st.addEv('ev_medical_record');},
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">异常针孔追溯</div>
-      <div class="progress-bar"><div class="fill" style="width:45%"></div></div>
-      <div class="scene-text">两个针孔中，肘窝处的是常规医疗注射——但前臂下方那个角度奇怪的针孔引起了你的注意。
-
-你对比了孙慧珍的医疗记录。当晚她记录的注射是"常规心血管药物8:00pm"，但晚宴7:30才开始，陈伯远一直在餐桌上。她在时间上撒了谎。
-
-更重要的是，那个异常针孔的注射物是<span class="highlight">过量胰岛素</span>——远超治疗剂量。胰岛素会导致低血糖昏迷，而陈伯远本身就有心脏病，昏迷后心脏骤停几乎是必然的。
-
-孙慧珍有动机：陈伯远发现了她三年前的一起医疗事故，威胁要举报。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('e3')">追溯颈部枕头痕迹</button>
-        ${!st.hasEv('ev_weapon_match')?'<button class="choice-btn" onclick="go(\'e1\')">返回检查刀具</button>':''}
-      </div>
-    </div>`;
-  }
-},
-
-e3:{
-  bg:IMAGES.secret,
-  onEnter(){st.addEv('ev_pillow_fiber');st.addEv('ev_neck_marks');
-    st.setFlag('act2','E');},
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">枕头与颈部痕迹</div>
-      <div class="progress-bar"><div class="fill" style="width:50%"></div></div>
-      <div class="scene-text">颈部淤青的织物纤维经过比对——白色棉质，与赵婉容房间的枕头面料完全一致。
-
-有人用枕头按住了陈伯远的面部。但尸检显示没有窒息征象——嘴唇发紫是毒物导致的，不是缺氧。
-
-这意味着<span class="highlight">按住枕头时，陈伯远已经停止了呼吸</span>。那个人对着一具尸体"行凶"，却浑然不知。
-
-赵婉容是遗嘱的最大受益人。如果陈伯远改了遗嘱她将一无所有。她有充分的动机——只是来晚了一步。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('act3_intro')" style="border-color:var(--accent)">进入第三幕 · 真相浮现 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ACT 2 ROUTE F: SECRET INVESTIGATION =====
-f1:{
-  bg:IMAGES.corridor,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">暗访 · 深夜搜查</div>
-      <div class="progress-bar"><div class="fill" style="width:40%"></div></div>
-      <div class="scene-text">凌晨一点，山庄陷入死寂。暴风雨仍在肆虐，但所有人都回到了各自房间。
-
-你拿着手电筒在走廊中穿行，脚步声被雨声掩盖。这是搜查房间的最佳时机——也是最后的时机。
-
-${st.isItem('key')?'<span class="clue">万能钥匙在手，锁住的门也挡不住你。</span>':'<span class="thought">没有万能钥匙，你只能搜查未上锁的房间。</span>'}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('f1_partner')">搜查方志远的房间</button>
-        <button class="choice-btn" onclick="go('f1_apprentice')">
-          搜查张明轩的房间
-          ${st.isItem('photo')?'<span class="tag tag-item">旧照片</span>':''}
-          ${st.isItem('key')?'<span class="tag tag-item">万能钥匙</span>':'<span class="lock-hint">⚠️ 房门上锁，需要万能钥匙</span>'}
-        </button>
-        <button class="choice-btn" onclick="go('f1_wife')">
-          搜查赵婉容的房间
-          ${st.isItem('key')?'<span class="tag tag-item">万能钥匙</span>':'<span class="lock-hint">⚠️ 房门上锁，需要万能钥匙</span>'}
-        </button>
-      </div>
-    </div>`;
-  }
-},
-
-f1_partner:{
-  bg:IMAGES.secret,
-  onEnter(){st.addEv('ev_embezzlement');st.addEv('ev_wine_serving');
-    if(st.isItem('recorder')){st.addEv('ev_old_case_file');}},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_old_case_file'))extra='\n\n<span class="clue">录音笔录下了方志远梦中的呓语："……对不起……红酒……不该放那么多……"他在梦中承认了投毒。</span>';
-    return `<div class="scene-card">
-      <div class="scene-title">方志远的房间</div>
-      <div class="progress-bar"><div class="fill" style="width:45%"></div></div>
-      <div class="scene-text">方志远的房间凌乱。你在书桌抽屉中发现了伪造的公司账目文件——他侵吞了800万，审计下周就会揭发。
-
-更关键的是，你在他的行李箱夹层中发现了一张<span class="highlight">中药铺的收据</span>——购买附子（含乌头碱）三两。日期就在一周前。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('f1_apprentice')" ${!st.isItem('key')?'class="locked"':''}>搜查张明轩的房间</button>
-        <button class="choice-btn" onclick="go('f1_wife')" ${!st.isItem('key')?'class="locked"':''}>搜查赵婉容的房间</button>
-        <button class="choice-btn" onclick="go('f1_end')" style="border-color:var(--accent)">结束暗访，整理发现</button>
-      </div>
-    </div>`;
-  }
-},
-
-f1_apprentice:{
-  bg:IMAGES.secret,
-  onEnter(){st.addEv('ev_father_letter');st.addEv('ev_poison_residue');
-    if(st.isItem('photo'))st.addEv('ev_identity_reveal');
-    if(st.isItem('recorder')){st.addEv('ev_apprentice_nervous');}},
-  render(){
-    let extra='';
-    if(st.hasEv('ev_identity_reveal'))extra='\n\n<span class="clue">你拿出旧照片与房间镜框中的一张合影对比——照片中的少年与张明轩五官高度吻合。照片背面写着"刘子谦·父刘文山"。张明轩就是刘子谦——二十年前被陈伯远陷害入狱、含冤而死的古董商刘文山之子！</span>';
-    return `<div class="scene-card">
-      <div class="scene-title">张明轩的房间</div>
-      <div class="progress-bar"><div class="fill" style="width:45%"></div></div>
-      <div class="scene-text">${st.isItem('key')?'万能钥匙无声地转动了锁芯。':''}张明轩的房间出奇地整洁——过于整洁了，像是在掩饰什么。
-
-你在床垫下发现了一封泛黄的信——<span class="highlight">父亲遗书</span>。信中控诉陈伯远二十年前伪造古董鉴定，嫁祸于他，致其含冤入狱，最终病死狱中。信的末尾写着："吾儿当为我讨回公道。"
-
-在茶叶罐底部，你发现了白色粉末——<span class="highlight">慢性毒药残留</span>。${extra}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('f1_partner')">搜查方志远的房间</button>
-        <button class="choice-btn" onclick="go('f1_wife')">搜查赵婉容的房间</button>
-        <button class="choice-btn" onclick="go('f1_end')" style="border-color:var(--accent)">结束暗访，整理发现</button>
-      </div>
-    </div>`;
-  }
-},
-
-f1_wife:{
-  bg:IMAGES.secret,
-  onEnter(){st.addEv('ev_will_copy');st.addEv('ev_hidden_pillow');
-    st.addEv('ev_wife_whereabout');},
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">赵婉容的房间</div>
-      <div class="progress-bar"><div class="fill" style="width:45%"></div></div>
-      <div class="scene-text">${st.isItem('key')?'万能钥匙打开了她的房门。':''}赵婉容的房间弥漫着浓重的香水味，似乎在掩盖什么。
-
-你在梳妆台抽屉里发现了遗嘱的复印件——上面用红笔标注了她的继承份额，以及一行字："必须在改遗嘱之前。"
-
-衣柜最深处，藏着一个枕头。上面的<span class="highlight">微弱血迹</span>和陈伯远颈部的淤痕纤维完全吻合。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('f1_partner')">搜查方志远的房间</button>
-        <button class="choice-btn" onclick="go('f1_apprentice')">搜查张明轩的房间</button>
-        <button class="choice-btn" onclick="go('f1_end')" style="border-color:var(--accent)">结束暗访，整理发现</button>
-      </div>
-    </div>`;
-  }
-},
-
-f1_end:{
-  bg:IMAGES.corridor,
-  onEnter(){st.setFlag('act2','F');},
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">暗访总结</div>
-      <div class="progress-bar"><div class="fill" style="width:50%"></div></div>
-      <div class="scene-text">你回到走廊，心跳加速。今夜的发现远超预期——
-
-<span class="clue">方志远：财务造假文件 + 购买附子的收据。
-张明轩：父亲遗书 + 慢性毒药残留${st.hasEv('ev_identity_reveal')?' + 身份确认：真名刘子谦，旧案受害者之子':''}。
-赵婉容：遗嘱副本 + 藏匿的血迹枕头。</span>
-
-每一个房间都藏着不同的罪证。这不是一个人的谋杀——这是一群人的合谋，尽管他们彼此并不知情。
-
-你收集了 ${st.evCount()} 条证据。</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('act3_intro')" style="border-color:var(--accent)">进入第三幕 · 真相浮现 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ACT 3 =====
-act3_intro:{
-  bg:IMAGES.dining,
-  render(){
-    const evCount=st.evCount();
-    let text='';
-    if(evCount>=12){
-      text=`你将所有证据摊在餐桌上。一个令人毛骨悚然的画面浮现——
-
-<span class="danger">这一夜，有六个人分别对陈伯远下了杀手。</span>
-
-方志远在红酒中下了乌头碱。
-孙慧珍注射了过量胰岛素。
-陈雨晴替换了降压药中的氯化钾。
-李德昌用裁纸刀刺了三刀——但人已死。
-赵婉容试图用枕头捂死——但人已死。
-张明轩三周来持续投慢性毒药。
-
-六个人，六种手段，六个动机。他们彼此不知，却在同一个暴雨之夜，不约而同地成为了杀手。`;
-    }else if(evCount>=8){
-      text=`你将证据整理排列。一条危险的线索逐渐清晰——
-
-<span class="danger">这不是一个人的谋杀。至少有三到四个人分别参与了这场谋杀。</span>
-
-你已经识别出部分凶手，但可能还有遗漏。你掌握的证据越多，能看清的真相就越完整。`;
-    }else if(evCount>=5){
-      text=`你审视着手中有限的证据。案情比表面复杂得多——
-
-<span class="highlight">至少有两个以上的人分别对陈伯远下了杀手。</span>
-
-但你掌握的证据还不够完整。有些凶手可能隐藏在你尚未触及的暗处。`;
-    }else{
-      text=`你手中的证据零散而模糊。你知道这不是简单的心脏病——但你还不清楚到底有多少人参与。
-
-<span class="thought">也许你应该回去重新调查……但暴风雨已经封锁了一切。</span>`;
-    }
-    return `<div class="scene-card">
-      <div class="scene-title">第三幕 · 真相浮现</div>
-      <div class="progress-bar"><div class="fill" style="width:65%"></div></div>
-      <div class="scene-text">${text}</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('act3_confront')">召集所有人 · 最终对质</button>
-      </div>
-    </div>`;
-  }
-},
-
-act3_confront:{
-  bg:IMAGES.confront,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">最终对质</div>
-      <div class="progress-bar"><div class="fill" style="width:80%"></div></div>
-      <div class="scene-text">暴风雨到了最猛烈的时刻。你将所有人召集到餐厅，烛火在风中摇曳，投下每个人扭曲的影子。
-
-"陈伯远的死，不是心脏病。"你的声音在雷声中依然清晰，"这一夜，有多个人对他下了杀手。"
-
-沉默。然后是彼此惊恐对视的目光——他们不知道，自己的"同谋"就在身边。
-
-"现在，我需要做出指认。"</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="go('accusation')" style="border-color:var(--accent);color:var(--gold)">开始最终指认 →</button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ACCUSATION =====
-accusation:{
-  bg:IMAGES.confront,
-  render(){
-    return `<div class="scene-card">
-      <div class="scene-title">最终指认</div>
-      <div class="progress-bar"><div class="fill" style="width:90%"></div></div>
-      <div class="scene-text">你站在餐厅中央，六个人围坐在长桌两侧。烛火映照着他们各异的神情——恐惧、伪装、疲惫、绝望。
-
-现在，你需要回答三个问题。</div>
-
-      <div class="accuse-section">
-        <div class="accuse-q">一、这一夜，有几个人参与了谋杀？（含未遂）</div>
-        <div class="count-btns" id="countBtns">
-          ${[1,2,3,4,5,6].map(n=>`<button class="count-btn" onclick="selectCount(${n})">${n}人</button>`).join('')}
-        </div>
-      </div>
-
-      <div class="accuse-section">
-        <div class="accuse-q">二、谁是凶手？（可多选）</div>
-        <div class="suspect-grid">
-          ${SUSPECTS.map(s=>`<div class="suspect-card" onclick="toggleSuspect('${s.id}')" id="sus-${s.id}">
-            <div class="av" style="background:${s.color}33">${s.icon}</div>
-            <div class="nm">${s.name}<br><span style="font-size:.8em;color:var(--dim)">${s.role}</span></div>
-          </div>`).join('')}
-        </div>
-      </div>
-
-      <div class="accuse-section">
-        <div class="accuse-q">三、致死的真正原因是什么？</div>
-        <div class="count-btns" id="causeBtns">
-          <button class="count-btn" onclick="selectCause('heart')">心脏病自然发作</button>
-          <button class="count-btn" onclick="selectCause('poison')">多种毒物协同致死</button>
-          <button class="count-btn" onclick="selectCause('stab')">刀伤失血</button>
-          <button class="count-btn" onclick="selectCause('suffocate')">窒息</button>
-        </div>
-      </div>
-
-      <div style="text-align:center;margin-top:20px">
-        <button class="btn-start" style="font-size:.95em;padding:10px 36px" id="accuseBtn"
-          onclick="submitAccusation()" disabled style="opacity:.4;cursor:not-allowed">提交指认</button>
-      </div>
-    </div>`;
-  }
-},
-
-// ===== ENDINGS =====
-ending:{
-  bg:IMAGES.dawn,
-  render(){
-    const r=st.getResult();
-    return `<div class="scene-card ending-card">
-      <h2 style="color:${r.color}">${r.title}</h2>
-      <div class="ending-text">${r.text}</div>
-      <div class="stats">
-        正确识别凶手：${r.correctCount}/${r.totalKillers} 人<br>
-        证据收集：${st.evCount()} / ${Object.keys(EVIDENCE).length} 条<br>
-        你的职业：${st.prof?PROFESSIONS.find(p=>p.id===st.prof).name:'未知'}<br>
-        你的道具：${st.item?ITEMS.find(i=>i.id===st.item).name:'未知'}<br>
-        调查路线：第一幕 ${st.getFlag('act1')||'?'} → 第二幕 ${st.getFlag('act2')||'?'}
-      </div>
-      ${r.moralChoice?`
-      <div style="margin:20px 0;padding:16px;background:rgba(196,149,106,.08);border:1px solid var(--accent);border-radius:4px">
-        <div style="color:var(--accent);font-family:'Noto Serif SC',serif;margin-bottom:10px">道德抉择</div>
-        <div style="font-size:.9em;line-height:1.7;margin-bottom:14px">${r.moralText}</div>
-        <div class="choices">
-          <button class="choice-btn" onclick="go('ending_moral_justice')">依法处理所有人</button>
-          <button class="choice-btn" onclick="go('ending_moral_mercy')">放走张明轩</button>
-          ${st.hasEv('ev_identity_reveal')?'<button class="choice-btn" onclick="go(\'ending_moral_reveal\')">揭露旧案真相</button>':''}
-        </div>
-      </div>`:''}
-      <div class="replay-info">
-        <h4>🔄 重玩探索</h4>
-        <div style="font-size:.82em;color:var(--dim);margin-bottom:8px;line-height:1.6">
-          4种职业 × 4种道具 = 16种组合<br>
-          第一幕3条路线 × 第二幕3条路线 = 9种路径<br>
-          不同组合解锁不同证据和场景！
-        </div>
-        <div>
-          ${PROFESSIONS.map(p=>ITEMS.map(i=>{
-            const combo=`${p.id}-${i.id}`;
-            const played=(st.prof===p.id&&st.item===i.id);
-            return `<span class="combo ${played?'played':''}">${p.icon}${i.icon} ${p.name.slice(0,2)}+${i.name.slice(0,2)}</span>`;
-          }).join('')).join('')}
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:20px">
-        <button class="btn-start" onclick="location.reload()">重新开始</button>
-      </div>
-    </div>`;
-  }
-},
-
-ending_moral_justice:{
-  bg:IMAGES.dawn,
-  render(){
-    return `<div class="scene-card ending-card">
-      <h2 style="color:var(--gold)">依法处理</h2>
-      <div class="ending-text">你选择了法律。
-
-六个人被移交警方。方志远和孙慧珍因直接投毒被判谋杀罪；陈雨晴以替换药物致死被判过失致人死亡；李德昌虽刺的是尸体，但因意图杀人被判未遂；赵婉容同样以杀人未遂论处；张明轩的慢性投毒被认定为谋杀的共因。
-
-暴风雨在黎明时分停了。你走出听雨山庄，阳光穿透云层，洒在泥泞的山路上。
-
-六个人，六种罪。法律给了每一个罪一个答案。
-
-但你心里知道——有些真相，法律也回答不了。二十年前陈伯远犯下的罪，谁来审判？</div>
-      <div class="stats">
-        结局：依法处理 · 灰色正义<br>
-        证据收集：${st.evCount()} / ${Object.keys(EVIDENCE).length} 条
-      </div>
-      <div style="text-align:center;margin-top:20px">
-        <button class="btn-start" onclick="location.reload()">重新开始</button>
-      </div>
-    </div>`;
-  }
-},
-
-ending_moral_mercy:{
-  bg:IMAGES.dawn,
-  render(){
-    return `<div class="scene-card ending-card">
-      <h2 style="color:var(--success)">放他一条生路</h2>
-      <div class="ending-text">你找到了张明轩——不，刘子谦。
-
-"你父亲的冤案，我知道。"你的声音很轻，"二十年前，陈伯远伪造鉴定，嫁祸你父亲入狱。他才是真正的罪人。"
-
-他跪在地上，泪水和雨水混在一起。
-
-你做出了选择。在你的报告中，张明轩的慢性投毒被"遗漏"了。其他五人依法处理，而刘子谦——你告诉他："离开这里。不要再回来。"
-
-他消失在暴风雨中。
-
-你知道你成了共犯。但有些正义，法律给不了。你用沉默，替一个死去的父亲完成了审判。
-
-这是你的灰色正义。</div>
-      <div class="stats">
-        结局：灰色正义 · 放走<br>
-        证据收集：${st.evCount()} / ${Object.keys(EVIDENCE).length} 条
-      </div>
-      <div style="text-align:center;margin-top:20px">
-        <button class="btn-start" onclick="location.reload()">重新开始</button>
-      </div>
-    </div>`;
-  }
-},
-
-ending_moral_reveal:{
-  bg:IMAGES.dawn,
-  render(){
-    return `<div class="scene-card ending-card">
-      <h2 style="color:var(--danger)">双重审判</h2>
-      <div class="ending-text">你没有只揭露今晚的谋杀。你将二十年前陈伯远伪造古董鉴定、嫁祸刘文山入狱致死的旧案一并公之于众。
-
-"陈伯远是今晚的受害者，"你对着所有人说，"但他也是二十年前的凶手。在座各位杀了一个凶手——但凶手也是受害者，受害者也曾是凶手。"
-
-餐厅陷入死寂。六个人第一次意识到——他们不约而同选择的同一个夜晚，杀死了同一个人。而那个人，手上也沾着另一条人命。
-
-你将旧案和新案的证据同时提交。媒体报道了这桩震惊全国的"三刀两毒"案。六名杀手各获其罪，而陈伯远的罪行也被追诉。
-
-正义来了。迟到的，混乱的，但终究来了。
-
-没有人是干净的。</div>
-      <div class="stats">
-        结局：双重审判 · 真相大白<br>
-        证据收集：${st.evCount()} / ${Object.keys(EVIDENCE).length} 条
-      </div>
-      <div style="text-align:center;margin-top:20px">
-        <button class="btn-start" onclick="location.reload()">重新开始</button>
-      </div>
-    </div>`;
-  }
-}
-
-}; // End SCENES
-
-// ========== GAME STATE ==========
-
-const st={
-  prof:null,item:null,ev:new Set(),flags:{},
-  act1:null,act2:null,
-  accuseCount:null,accuseSuspects:new Set(),accuseCause:null,
-
-  isProf(id){return this.prof===id},
-  isItem(id){return this.item===id},
-  hasEv(id){return this.ev.has(id)},
-  addEv(id){
-    if(!this.ev.has(id)&&EVIDENCE[id]){
-      this.ev.add(id);
-      showToast('🔍 '+EVIDENCE[id].title);
-      updateEvPanel();
-    }
+  // ===== EDDARD =====
+  eddard_1: {
+    char: '艾德·史塔克', act: '第一幕 · 召唤', image: 'images/castle.jpg',
+    text: '新王兰尼斯特召你入朝担任御前首相。北境需要你，但王命不可违。',
+    choices: [
+      { text: '接受召唤，南下都城', next: 'eddard_2a' },
+      { text: '拒绝王命，固守北境', next: 'eddard_2b' },
+      { text: '表面接受，暗中调查国王', next: 'eddard_2c' }
+    ]
   },
-  evCount(){return this.ev.size},
-  setFlag(k,v){this.flags[k]=v},
-  getFlag(k){return this.flags[k]},
+  eddard_2a: {
+    char: '艾德·史塔克', act: '第二幕 · 都城', image: 'images/throne.jpg',
+    text: '都城暗流涌动。你发现王后与其弟通奸，王储的血统存疑。御前会议上，太师暗示你"有些秘密，知道了就该死"。',
+    choices: [
+      { text: '向国王揭发真相', next: 'ending_hero' },
+      { text: '隐忍不发，暗中联合诸侯', next: 'ending_iron_throne' },
+      { text: '深入调查太师的秘密', next: 'eddard_3a' }
+    ]
+  },
+  eddard_2b: {
+    char: '艾德·史塔克', act: '第二幕 · 北境', image: 'images/wall.jpg',
+    text: '长城来报：异鬼大举南下，北境危在旦夕。守夜人求援信上只有四个字——"长夜将至"。',
+    choices: [
+      { text: '率北境军北上，迎击异鬼', next: 'ending_hero' },
+      { text: '加固长城防线，向七国求援', next: 'ending_peace' },
+      { text: '亲赴长城，与守夜人共商对策', next: 'eddard_3b' }
+    ]
+  },
+  eddard_2c: {
+    char: '艾德·史塔克', act: '第二幕 · 阴谋', image: 'images/throne.jpg',
+    text: '你发现国王不过是傀儡，王后之父泰温才是幕后黑手。泰温已察觉你在调查他——侍卫中已混入他的眼线。',
+    choices: [
+      { text: '控制傀儡国王，垂帘听政', next: 'ending_shadow' },
+      { text: '联合领主，秘密举兵', next: 'ending_iron_throne' },
+      { text: '假意投靠泰温，暗中收集铁证', next: 'eddard_3c' }
+    ]
+  },
+  eddard_3a: {
+    char: '艾德·史塔克', act: '第三幕 · 深渊', image: 'images/throne.jpg',
+    text: '你深入调查太师，发现他不只操控朝政，更与东方密宗有往来——他在用禁术延续寿命。太师已发现了你的窥探。',
+    choices: [
+      { text: '公开禁术证据，将太师送上审判台', next: 'ending_reckoning' },
+      { text: '利用禁术要挟太师，反客为主', next: 'ending_shadow' }
+    ]
+  },
+  eddard_3b: {
+    char: '艾德·史塔克', act: '第三幕 · 长城', image: 'images/wall.jpg',
+    text: '你亲赴长城，发现守夜人已折损过半。总司令告诉你一个惊人的秘密：异鬼并非入侵，它们是在"回归"——这片土地本就属于它们。',
+    choices: [
+      { text: '联合守夜人，以血肉之躯守住关口', next: 'ending_hero' },
+      { text: '寻找远古契约，尝试与异鬼谈判', next: 'ending_peace' }
+    ]
+  },
+  eddard_3c: {
+    char: '艾德·史塔克', act: '第三幕 · 反杀', image: 'images/battle.jpg',
+    text: '你假意投靠泰温，成功获取了他叛国通敌的铁证。但泰温比你想的更狡猾——他在你身边布下了最后的杀局。',
+    choices: [
+      { text: '在朝堂上公开证据，拼死一搏', next: 'ending_reckoning' },
+      { text: '带证据逃出都城，号召诸侯勤王', next: 'ending_exile' }
+    ]
+  },
 
-  getResult(){
-    const correctKillers=['zhiyuan','huizhen','yuqing','dechang','mingxuan','wanrong'];
-    const selected=[...this.accuseSuspects];
-    const correct=selected.filter(s=>correctKillers.includes(s));
-    const wrong=selected.filter(s=>!correctKillers.includes(s));
-    const missed=correctKillers.filter(s=>!selected.includes(s));
-    const countCorrect=this.accuseCount===6;
-    const causeCorrect=this.accuseCause==='poison';
-    const score=correct.length*2+(countCorrect?1:0)+(causeCorrect?1:0);
-    const totalKillers=6;
+  // ===== DAENERYS =====
+  daenerys_1: {
+    char: '丹妮莉丝', act: '第一幕 · 龙蛋', image: 'images/dragon.jpg',
+    text: '你手握三颗石化龙蛋。一位富商愿以整支舰队相换。烈火在你的血脉中低语。',
+    choices: [
+      { text: '走入烈火，孵化龙蛋', next: 'daenerys_2a' },
+      { text: '换取舰队，渡海西征', next: 'daenerys_2b' },
+      { text: '以龙蛋联姻多恩', next: 'daenerys_2c' }
+    ]
+  },
+  daenerys_2a: {
+    char: '丹妮莉丝', act: '第二幕 · 巨龙', image: 'images/dragon.jpg',
+    text: '烈焰中，三头巨龙破壳而出！你是三百年来第一位龙骑士。但龙需要食物，需要领地，需要臣民。',
+    choices: [
+      { text: '骑龙渡海，以火夺回铁王座', next: 'ending_dragonfire' },
+      { text: '先解放东方奴隶城邦，积蓄力量', next: 'ending_iron_throne' },
+      { text: '以龙威震慑七国，要求和平归顺', next: 'daenerys_3a' }
+    ]
+  },
+  daenerys_2b: {
+    char: '丹妮莉丝', act: '第二幕 · 风暴', image: 'images/battle.jpg',
+    text: '舰队遭遇风暴，残兵登陆时正值北境异鬼入侵。军队疲惫不堪，但龙蛋在行囊中微微发烫。',
+    choices: [
+      { text: '先助北境抗击异鬼', next: 'ending_peace' },
+      { text: '趁乱直取都城', next: 'ending_winter' },
+      { text: '在废墟中尝试孵化龙蛋', next: 'daenerys_3b' }
+    ]
+  },
+  daenerys_2c: {
+    char: '丹妮莉丝', act: '第二幕 · 联姻', image: 'images/castle.jpg',
+    text: '你与多恩联姻，获得南方大军。但配偶在枕边透露：这只是利用你夺取铁王座的棋局。',
+    choices: [
+      { text: '将计就计，反客为主', next: 'ending_iron_throne' },
+      { text: '识破阴谋，连夜出逃', next: 'ending_exile' },
+      { text: '假意顺从，暗中联络旧部', next: 'daenerys_3c' }
+    ]
+  },
+  daenerys_3a: {
+    char: '丹妮莉丝', act: '第三幕 · 龙威', image: 'images/dragon.jpg',
+    text: '你骑龙飞临君临城上空，全城跪伏。但王后释放了隐藏的蝎弩——毒箭刺穿了巨龙的翅膀。龙怒吼着坠向城市。',
+    choices: [
+      { text: '以最后的力量控制巨龙，放弃王座保全百姓', next: 'ending_peace' },
+      { text: '放任巨龙的怒火，焚毁一切', next: 'ending_dragonfire' }
+    ]
+  },
+  daenerys_3b: {
+    char: '丹妮莉丝', act: '第三幕 · 烈火', image: 'images/dragon.jpg',
+    text: '你在战场废墟中点燃火葬堆，抱着龙蛋走入烈焰。火光冲天，巨龙重生！但它饥饿而狂暴，不受你的控制。',
+    choices: [
+      { text: '以血为祭，强行驯服巨龙', next: 'ending_dragonfire' },
+      { text: '引巨龙飞向北境，以龙焰对抗异鬼', next: 'ending_hero' }
+    ]
+  },
+  daenerys_3c: {
+    char: '丹妮莉丝', act: '第三幕 · 反杀', image: 'images/castle.jpg',
+    text: '你假意顺从配偶的计划，暗中联络了忠于你家族的旧部。婚礼之夜，旧部化装成乐师潜入城堡。',
+    choices: [
+      { text: '在宴会上发动突袭，夺取多恩全军', next: 'ending_iron_throne' },
+      { text: '暴露身份后遭围攻，带残部出逃', next: 'ending_exile' }
+    ]
+  },
 
-    // Determine ending
-    if(correct.length===6&&countCorrect&&causeCorrect&&!wrong.length){
-      return{
-        title:'真相大白',
-        color:'var(--gold)',
-        text:`你做到了。
+  // ===== JON =====
+  jon_1: {
+    char: '琼恩·雪诺', act: '第一幕 · 长城', image: 'images/wall.jpg',
+    text: '长城巡逻时，你发现异鬼南下的踪迹。冰原上的脚印，延伸向南方。',
+    choices: [
+      { text: '立即回报总司令', next: 'jon_2a' },
+      { text: '独自追踪异鬼', next: 'jon_2b' },
+      { text: '翻越长城，联合野人', next: 'jon_2c' }
+    ]
+  },
+  jon_2a: {
+    char: '琼恩·雪诺', act: '第二幕 · 渗透', image: 'images/wall.jpg',
+    text: '总司令不信你的报告。你自查发现——异鬼已渗透进长城内部，三名守夜人已被替换。',
+    choices: [
+      { text: '当众揭露内奸', next: 'ending_hero' },
+      { text: '暗中逐一清除间谍', next: 'ending_winter' },
+      { text: '设下陷阱，引蛇出洞', next: 'jon_3a' }
+    ]
+  },
+  jon_2b: {
+    char: '琼恩·雪诺', act: '第二幕 · 北方', image: 'images/wall.jpg',
+    text: '你深入北方，发现异鬼的源头——一颗古老的冰晶之心，脉动着死亡的寒光。守卫它的是一队已死去的远古守夜人。',
+    choices: [
+      { text: '正面强攻，摧毁冰晶之心', next: 'ending_peace' },
+      { text: '带情报返回长城，集结大军', next: 'ending_hero' },
+      { text: '尝试与远古守夜人沟通', next: 'jon_3b' }
+    ]
+  },
+  jon_2c: {
+    char: '琼恩·雪诺', act: '第二幕 · 联盟', image: 'images/battle.jpg',
+    text: '野人首领愿与守夜人结盟，条件是你放弃守夜人誓言。他的女儿用异鬼骨刃指着你："选择吧，乌鸦。"',
+    choices: [
+      { text: '接受条件，联合抗敌', next: 'ending_iron_throne' },
+      { text: '拒绝，独自面对异鬼', next: 'ending_hero' },
+      { text: '提出第三条路：共守长城', next: 'jon_3c' }
+    ]
+  },
+  jon_3a: {
+    char: '琼恩·雪诺', act: '第三幕 · 陷阱', image: 'images/wall.jpg',
+    text: '你放出假情报，引诱异鬼间谍在月圆夜动手。当夜风雪大作，黑影从四面八方涌来——来的不只是间谍，还有异鬼大军。',
+    choices: [
+      { text: '率守夜人死守长城，至最后一人', next: 'ending_hero' },
+      { text: '点燃长城上的远古龙火，与异鬼同归于尽', next: 'ending_reckoning' }
+    ]
+  },
+  jon_3b: {
+    char: '琼恩·雪诺', act: '第三幕 · 远古', image: 'images/wall.jpg',
+    text: '远古守夜人沉默地看着你，眼中没有恶意，只有无尽的疲倦。其中一个用冰封的嘴唇说出了一个词："契约。"',
+    choices: [
+      { text: '接受远古契约，以长城为界永世分隔', next: 'ending_peace' },
+      { text: '拒绝契约，摧毁冰晶之心终结一切', next: 'ending_winter' }
+    ]
+  },
+  jon_3c: {
+    char: '琼恩·雪诺', act: '第三幕 · 同盟', image: 'images/battle.jpg',
+    text: '你提出守夜人与野人共守长城，不分彼此。野人首领沉默良久，伸出伤疤累累的手："那就一起死吧。"',
+    choices: [
+      { text: '率联军南下，向七国求援共抗异鬼', next: 'ending_peace' },
+      { text: '联军战至最后一人，为七国争取时间', next: 'ending_hero' }
+    ]
+  },
 
-六个凶手，六种手段，六个动机——你将每一个都揪了出来。
+  // ===== VARYS =====
+  varys_1: {
+    char: '瓦里斯', act: '第一幕 · 密信', image: 'images/throne.jpg',
+    text: '你截获一封密信：有人计划在丰收宴上毒杀国王。嫌疑指向王后与太师。你的"小小鸟"们带来了更多细节。',
+    choices: [
+      { text: '将密信呈交国王', next: 'varys_2a' },
+      { text: '私下利用密信要挟王后', next: 'varys_2b' },
+      { text: '暗中保护国王', next: 'varys_2c' }
+    ]
+  },
+  varys_2a: {
+    char: '瓦里斯', act: '第二幕 · 审判', image: 'images/throne.jpg',
+    text: '国王大怒处死王后，但太师逃脱，发动了叛乱。国王惊恐地问你："蜘蛛，我还能信任谁？"',
+    choices: [
+      { text: '辅佐国王平定叛乱', next: 'ending_peace' },
+      { text: '趁乱夺权，坐收渔利', next: 'ending_shadow' },
+      { text: '暗中联络叛军，两面下注', next: 'varys_3a' }
+    ]
+  },
+  varys_2b: {
+    char: '瓦里斯', act: '第二幕 · 要挟', image: 'images/castle.jpg',
+    text: '你用密信要挟王后，成为幕后的影子掌权者。但王后暗中说动了一名将军，准备对你下手。',
+    choices: [
+      { text: '先发制人，扶持傀儡登基', next: 'ending_shadow' },
+      { text: '暗中操纵各方势力，让将军自相残杀', next: 'ending_exile' },
+      { text: '携密信逃亡，向诸侯出卖情报', next: 'varys_3b' }
+    ]
+  },
+  varys_2c: {
+    char: '瓦里斯', act: '第二幕 · 暗卫', image: 'images/throne.jpg',
+    text: '你在宴会上偷换了毒酒，救了国王一命。但太师注意到了你的举动——你的"小小鸟"开始一个个消失。',
+    choices: [
+      { text: '继续隐于暗处，做无名守护者', next: 'ending_peace' },
+      { text: '表明身份，求取封赏和兵权', next: 'ending_hero' },
+      { text: '反杀太师，根除威胁', next: 'varys_3c' }
+    ]
+  },
+  varys_3a: {
+    char: '瓦里斯', act: '第三幕 · 两面', image: 'images/throne.jpg',
+    text: '你同时向国王和叛军提供情报，让双方都以为你是自己人。但太师之子率军屠城，百姓死伤无数。双方的使者同时要求你表态。',
+    choices: [
+      { text: '倒向国王，协助平叛赎罪', next: 'ending_peace' },
+      { text: '倒向叛军，彻底掌控新政权', next: 'ending_shadow' }
+    ]
+  },
+  varys_3b: {
+    char: '瓦里斯', act: '第三幕 · 出逃', image: 'images/castle.jpg',
+    text: '你带着密信逃出都城，来到一位忠诚诸侯的领地。诸侯看了密信后沉默良久："这封信足以让七国大乱。交给我，还是……？"',
+    choices: [
+      { text: '将密信交给诸侯，让他举旗勤王', next: 'ending_iron_throne' },
+      { text: '独自保管密信，以它为筹码游走各方', next: 'ending_exile' }
+    ]
+  },
+  varys_3c: {
+    char: '瓦里斯', act: '第三幕 · 反杀', image: 'images/throne.jpg',
+    text: '你设下圈套，让太师以为发现了你的藏身之处。当太师带人前来时，迎接他的是国王的禁卫军。但太师手中还有最后一张牌——你的真实身份。',
+    choices: [
+      { text: '在太师开口前杀他灭口，永远埋葬过去', next: 'ending_shadow' },
+      { text: '任由太师揭露你的身份，以真相换取清白', next: 'ending_hero' }
+    ]
+  },
 
-方志远——红酒中的乌头碱。
-孙慧珍——注射的过量胰岛素。
-陈雨晴——替换的氯化钾降压药。
-李德昌——裁纸刀的三刺（死后伤）。
-赵婉容——枕头捂压（对尸体行凶）。
-张明轩——三周的慢性投毒。
+  // ===== GENDRY (平民) =====
+  gendry_1: {
+    char: '詹德利', act: '第一幕 · 铁匠铺', image: 'images/battle.jpg',
+    text: '战火蔓延到君临城的铁匠铺。你被征召铸造武器，却在熔炉中发现一柄刻有雄鹿纹章的古剑——亡父留下的唯一遗物。',
+    choices: [
+      { text: '参军入伍，在战场寻找身世', next: 'gendry_2a' },
+      { text: '带古剑逃离君临，向北寻找答案', next: 'gendry_2b' },
+      { text: '留在铁匠铺，暗中组织平民自卫', next: 'gendry_2c' }
+    ]
+  },
+  gendry_2a: {
+    char: '詹德利', act: '第二幕 · 从军', image: 'images/battle.jpg',
+    text: '你在战场上勇猛善战，引起将领注意。一名骑士认出了你手中的古剑——那是先王劳勃的佩剑。"你是谁？"骑士追问。',
+    choices: [
+      { text: '承认身份，号召旧部', next: 'ending_commoner_king' },
+      { text: '隐藏身份，靠军功晋升', next: 'ending_iron_throne' },
+      { text: '携剑逃离军营，独自寻找真相', next: 'gendry_3a' }
+    ]
+  },
+  gendry_2b: {
+    char: '詹德利', act: '第二幕 · 逃亡', image: 'images/castle.jpg',
+    text: '你一路北上，在岔路口遇见两个旅人：一个守夜人逃兵警告你"北方已是死地"，一个自称先王旧臣的老人邀请你同行。',
+    choices: [
+      { text: '跟随老人寻找先王旧部', next: 'ending_commoner_king' },
+      { text: '独自前往北境长城', next: 'ending_hero' },
+      { text: '不信任任何人，独自上路', next: 'gendry_3b' }
+    ]
+  },
+  gendry_2c: {
+    char: '詹德利', act: '第二幕 · 民兵', image: 'images/castle.jpg',
+    text: '你组织起一群平民，守住了城镇。人们开始称你为"铁匠领主"。但你缺乏粮草和训练有素的士兵。',
+    choices: [
+      { text: '向北境求援，结盟抗敌', next: 'ending_peace' },
+      { text: '截获过境贵族的补给', next: 'ending_commoner_king' },
+      { text: '训练民兵，准备持久战', next: 'gendry_3c' }
+    ]
+  },
+  gendry_3a: {
+    char: '詹德利', act: '第三幕 · 真相', image: 'images/castle.jpg',
+    text: '你带着古剑逃离军营，在荒野中找到一座废弃的修道院。墙壁上刻满了族谱——你的父亲是先王劳勃，你是流淌着王血的私生子。',
+    choices: [
+      { text: '公开身份，号召天下勤王', next: 'ending_commoner_king' },
+      { text: '烧毁族谱，以铁匠身份了此残生', next: 'ending_exile' }
+    ]
+  },
+  gendry_3b: {
+    char: '詹德利', act: '第三幕 · 独行', image: 'images/battle.jpg',
+    text: '你独自上路，风餐露宿。一天夜里，你在篝火旁遇到一个戴兜帽的女人——她认出了你的古剑，说你长得很像一个人。',
+    choices: [
+      { text: '跟随她去找先王旧部', next: 'ending_commoner_king' },
+      { text: '谢绝她的好意，继续独自流浪', next: 'ending_exile' }
+    ]
+  },
+  gendry_3c: {
+    char: '詹德利', act: '第三幕 · 围城', image: 'images/battle.jpg',
+    text: '你训练的民兵初见成效，但一支正规军突然围城，要求交出"叛乱的铁匠"。你的民兵们用恐惧的眼神看着你。',
+    choices: [
+      { text: '率民兵突围，以少胜多', next: 'ending_hero' },
+      { text: '开城投降，以自己换取百姓平安', next: 'ending_reckoning' }
+    ]
+  },
 
-真正的死因是多种毒物协同作用导致的心脏骤停。
-
-你揭露了一个令人毛骨悚然的真相：六个人在同一夜独立对同一个人下了杀手，彼此毫不知情。这是命运最残酷的巧合——或者说，是陈伯远一生种下的恶因，在同一夜结出了全部恶果。
-
-现在，你面临最后一个选择。`,
-        correctCount:correct.length,
-        totalKillers,
-        moralChoice:true,
-        moralText:'你找到了所有凶手。但你发现张明轩（刘子谦）的父亲当年是被陈伯远陷害致死的。他的复仇有其正义性。你将如何处置？'
-      };
-    }
-    if(correct.length>=4){
-      const missedNames=missed.map(s=>SUSPECTS.find(x=>x.id===s).name).join('、');
-      return{
-        title:'大部分真相',
-        color:'var(--accent)',
-        text:`你揭露了大部分凶手，但遗漏了${missed.length}人。
-
-${missedNames?`你没有发现：${missedNames}。`:''}
-
-${wrong.length?`你冤枉了：${wrong.map(s=>SUSPECTS.find(x=>x.id===s).name).join('、')}。`:''}
-
-这一夜的真相远比你想象的复杂。六个人分别下了杀手，而你只看到了其中一部分。
-
-暴风雨过后，阳光照进听雨山庄。但有些阴影，永远不会散去。`,
-        correctCount:correct.length,totalKillers
-      };
-    }
-    if(correct.length>=1){
-      const missedNames=missed.map(s=>SUSPECTS.find(x=>x.id===s).name).join('、');
-      return{
-        title:'部分真相',
-        color:'var(--dim)',
-        text:`你只揪出了${correct.length}个凶手，遗漏了${missed.length}个。
-
-${missedNames?`你没有发现：${missedNames}。`:''}
-
-${wrong.length?`你冤枉了：${wrong.map(s=>SUSPECTS.find(x=>x.id===s).name).join('、')}。`:''}
-
-这一夜有六个人分别对陈伯远下了杀手。你掌握的证据不足以揭示全部真相。
-
-也许换一个职业，换一件道具，走另一条调查路线，你能看到更多。`,
-        correctCount:correct.length,totalKillers
-      };
-    }
-    if(selected.length===0){
-      return{
-        title:'真相迷失',
-        color:'var(--danger)',
-        text:`你没能指认出任何一个凶手。
-
-暴风雨过后，警方以心脏病发作结案。六个人各自带着秘密离开了听雨山庄。
-
-方志远继续侵吞公司财产。
-孙慧珍的执照保住了。
-陈雨晴还清了赌债。
-李德昌在怨恨中老去。
-赵婉容继承了全部遗产。
-张明轩……他消失了。
-
-真相被埋在了暴雨之下。没有人是干净的，也没有人受到惩罚。
-
-也许换一种调查方式，你能揭开更多。`,
-        correctCount:0,totalKillers
-      };
-    }
-    return{
-      title:'冤假错案',
-      color:'var(--danger)',
-      text:`你的指认有误。
-
-你指认了：${selected.map(s=>SUSPECTS.find(x=>x.id===s).name).join('、')}。
-
-但真正的凶手是：方志远、孙慧珍、陈雨晴、李德昌、赵婉容、张明轩。
-
-你冤枉了无辜的人，让真正的凶手逍遥法外。
-
-暴风雨过后，山庄恢复了平静。但正义，从未到来。`,
-      correctCount:correct.length,totalKillers
-    };
+  // ===== JAQEN (无面者) =====
+  jaqen_1: {
+    char: '贾昆·赫加尔', act: '第一幕 · 契约', image: 'images/assassin.jpg',
+    text: '千面之神降下契约：刺杀君临城中的一位大人物。目标未明示——你必须在三名权贵中做出判断。代价是：完成后，你将彻底成为"无人"。',
+    choices: [
+      { text: '接受契约，执行刺杀', next: 'jaqen_2a' },
+      { text: '拒绝契约，逃离黑白银子', next: 'jaqen_2b' },
+      { text: '利用契约，刺杀自己选择的目标', next: 'jaqen_2c' }
+    ]
+  },
+  jaqen_2a: {
+    char: '贾昆·赫加尔', act: '第二幕 · 执行', image: 'images/throne.jpg',
+    text: '你换了三张面孔，潜入宫廷。三个目标各有理由被千面之神选中：腐败的太师、残暴的将军、暗藏野心的王后。',
+    choices: [
+      { text: '刺杀王后，终结阴谋', next: 'ending_nobody' },
+      { text: '刺杀太师，揭露腐败', next: 'ending_reckoning' },
+      { text: '刺杀将军，引发军变', next: 'jaqen_3a' }
+    ]
+  },
+  jaqen_2b: {
+    char: '贾昆·赫加尔', act: '第二幕 · 违抗', image: 'images/assassin.jpg',
+    text: '你撕毁契约逃走。千面之神的信徒开始追杀你——"无人不可违抗"。你面前有三条路。',
+    choices: [
+      { text: '逃往北境，隐姓埋名', next: 'ending_exile' },
+      { text: '找到旧日同伴，寻求庇护', next: 'ending_nobody' },
+      { text: '反杀追兵，向千面之神宣战', next: 'jaqen_3b' }
+    ]
+  },
+  jaqen_2c: {
+    char: '贾昆·赫加尔', act: '第二幕 · 利用', image: 'images/castle.jpg',
+    text: '你决定利用契约刺杀自己的仇人——一个曾出卖你族人的领主。但千面之神不接受私仇，面具开始在你的脸上灼烧。',
+    choices: [
+      { text: '执行私仇刺杀，承担后果', next: 'ending_reckoning' },
+      { text: '伪装成执行契约，暗中改变目标', next: 'ending_shadow' },
+      { text: '放弃私仇，忠于契约', next: 'jaqen_3c' }
+    ]
+  },
+  jaqen_3a: {
+    char: '贾昆·赫加尔', act: '第三幕 · 军变', image: 'images/battle.jpg',
+    text: '将军死后军队哗变，却无人能控制局面。叛军开始屠城，无辜百姓的血染红了街道。你站在钟楼之上，看着自己引发的混乱。',
+    choices: [
+      { text: '以"无人"之名消失于乱世', next: 'ending_nobody' },
+      { text: '换一张面孔，以英雄身份平定混乱', next: 'ending_hero' }
+    ]
+  },
+  jaqen_3b: {
+    char: '贾昆·赫加尔', act: '第三幕 · 宣战', image: 'images/assassin.jpg',
+    text: '你连杀三名追兵，千面之神震怒。你找到一座古老的神庙，面具之墙上浮现出你曾经的所有面孔——它们在同时对你低语："无人可以违抗。无人。"',
+    choices: [
+      { text: '跪下，归还所有面孔，重新成为"无人"', next: 'ending_nobody' },
+      { text: '砸碎面具之墙，以凡人之身向神宣战', next: 'ending_reckoning' }
+    ]
+  },
+  jaqen_3c: {
+    char: '贾昆·赫加尔', act: '第三幕 · 忠诚', image: 'images/throne.jpg',
+    text: '你压制私仇，忠于契约，完成了千面之神的任务。神庙的门为你打开，面具之墙前，你的名字正在从记忆中消散。',
+    choices: [
+      { text: '戴上最后一张面具，成为千面之神的容器', next: 'ending_nobody' },
+      { text: '在最后一刻找回自己的名字，带着面具逃离', next: 'ending_shadow' }
+    ]
   }
 };
 
-// ========== ENGINE ==========
+// ========== GAME STATE ==========
+let state = {
+  character: null,
+  currentScene: null
+};
 
-let currentScene='title';
-
-function startGame(){
-  currentScene='profession_draw';
-  render();
+// ========== ENDING TRACKING ==========
+function getEndings() {
+  try { return JSON.parse(localStorage.getItem('iron_ice_endings') || '[]'); }
+  catch(e) { return []; }
 }
-
-function flipCard(){
-  const card=document.getElementById('profCard');
-  if(card.classList.contains('flipped'))return;
-  const prof=PROFESSIONS[Math.floor(Math.random()*PROFESSIONS.length)];
-  st.prof=prof.id;
-  document.getElementById('profBack').innerHTML=`
-    <div class="prof-icon">${prof.icon}</div>
-    <div class="prof-name">${prof.name}</div>
-    <div class="prof-skill">${prof.skill}</div>`;
-  card.classList.add('flipped');
-  setTimeout(()=>{
-    document.getElementById('profConfirm').style.display='block';
-  },600);
-}
-
-function confirmProfession(){
-  currentScene='item_select';
-  render();
-}
-
-let selectedItem=null;
-function selectItem(id){
-  selectedItem=id;
-  document.querySelectorAll('.item-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('item-'+id).classList.add('selected');
-  const btn=document.getElementById('itemConfirm');
-  btn.disabled=false;
-  btn.style.opacity='1';
-  btn.style.cursor='pointer';
-}
-
-function confirmItem(){
-  if(!selectedItem)return;
-  st.item=selectedItem;
-  currentScene='act1_intro';
-  render();
-  document.getElementById('evToggle').style.display='block';
-}
-
-function go(sceneId){
-  currentScene=sceneId;
-  render();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function render(){
-  const scene=SCENES[currentScene];
-  if(!scene){console.error('Scene not found:',currentScene);return}
-
-  // Update background
-  if(scene.bg){
-    document.getElementById('sceneBg').style.backgroundImage=`url('${scene.bg}')`;
+function saveEnding(id) {
+  try {
+    const endings = getEndings();
+    const isNew = !endings.includes(id);
+    if (isNew) {
+      endings.push(id);
+      localStorage.setItem('iron_ice_endings', JSON.stringify(endings));
+    }
+    return { isNew, total: endings.length };
+  } catch(e) {
+    return { isNew: false, total: 0 };
   }
-
-  // Run onEnter
-  if(scene.onEnter){
-    const before=st.evCount();
-    scene.onEnter();
-  }
-
-  // Render content
-  const game=document.getElementById('game');
-  game.innerHTML=scene.render();
-  game.classList.add('anim-fade');
-  setTimeout(()=>game.classList.remove('anim-fade'),800);
-
-  updateEvPanel();
 }
 
-// Accusation helpers
-function selectCount(n){
-  st.accuseCount=n;
-  document.querySelectorAll('#countBtns .count-btn').forEach((b,i)=>{
-    b.classList.toggle('selected',i+1===n);
+// ========== RENDER FUNCTIONS ==========
+function startGame() {
+  document.getElementById('title-screen').classList.add('hidden');
+  setTimeout(() => {
+    document.getElementById('title-screen').style.display = 'none';
+    renderCharacterSelect();
+  }, 800);
+}
+
+function renderCharacterSelect() {
+  document.getElementById('select-screen').classList.add('active');
+  document.getElementById('game-screen').classList.remove('active');
+  document.getElementById('ending-screen').classList.remove('active');
+  document.querySelector('.back-btn').classList.remove('visible');
+
+  const grid = document.getElementById('char-grid');
+  grid.innerHTML = '';
+  const endings = getEndings();
+  const discoveredCount = endings.length;
+  const totalEndings = Object.keys(ENDINGS).length;
+
+  CHARACTERS.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.style.animationDelay = (i * 0.15) + 's';
+    card.style.animation = 'sceneIn 0.5s ease ' + (i * 0.1) + 's both';
+
+    card.innerHTML = `
+      <div class="char-card-banner" style="background: ${c.banner}">
+        <div class="char-sigil">${c.sigil}</div>
+      </div>
+      <div class="char-card-body">
+        <div class="char-name">${c.name}</div>
+        <div class="char-title">${c.title}</div>
+        <div class="char-desc">${c.desc}</div>
+        <div class="char-card-footer">已发现结局 ${discoveredCount}/${totalEndings}</div>
+      </div>
+    `;
+    card.onclick = () => selectCharacter(c);
+    grid.appendChild(card);
   });
-  checkAccuseReady();
 }
 
-function toggleSuspect(id){
-  if(st.accuseSuspects.has(id))st.accuseSuspects.delete(id);
-  else st.accuseSuspects.add(id);
-  document.getElementById('sus-'+id).classList.toggle('selected');
-  checkAccuseReady();
+function selectCharacter(char) {
+  state.character = char;
+  state.currentScene = char.startScene;
+
+  document.getElementById('select-screen').classList.remove('active');
+  const gameScreen = document.getElementById('game-screen');
+  gameScreen.classList.add('active');
+  document.querySelector('.back-btn').classList.add('visible');
+
+  renderScene();
 }
 
-function selectCause(c){
-  st.accuseCause=c;
-  document.querySelectorAll('#causeBtns .count-btn').forEach(b=>{
-    b.classList.toggle('selected',b.onclick.toString().includes(c));
-  });
-  // Simpler: just toggle by onclick match
-  const btns=document.querySelectorAll('#causeBtns .count-btn');
-  const causes=['heart','poison','stab','suffocate'];
-  causes.forEach((c,i)=>btns[i].classList.toggle('selected',c===st.accuseCause));
-  checkAccuseReady();
+function renderScene() {
+  const scene = SCENES[state.currentScene];
+  if (!scene) return;
+
+  const wrapper = document.getElementById('scene-wrapper');
+  wrapper.style.animation = 'none';
+  void wrapper.offsetWidth;
+  wrapper.style.animation = 'sceneIn 0.5s ease';
+
+  let choicesHTML = scene.choices.map((c, i) =>
+    `<button class="choice-btn" onclick="makeChoice('${c.next}')">${c.text}</button>`
+  ).join('');
+
+  wrapper.innerHTML = `
+    <div class="scene-header">
+      <span class="scene-char">${state.character.sigil} ${scene.char}</span>
+      <span class="scene-act">${scene.act}</span>
+    </div>
+    <div class="scene-image"><img src="${scene.image}" alt=""></div>
+    <div class="scene-text">${scene.text}</div>
+    <div class="choices">${choicesHTML}</div>
+  `;
 }
 
-function checkAccuseReady(){
-  const ready=st.accuseCount!==null&&st.accuseSuspects.size>0&&st.accuseCause!==null;
-  const btn=document.getElementById('accuseBtn');
-  if(btn){
-    btn.disabled=!ready;
-    btn.style.opacity=ready?'1':'.4';
-    btn.style.cursor=ready?'pointer':'not-allowed';
+function makeChoice(nextScene) {
+  if (nextScene.startsWith('ending_')) {
+    showEnding(nextScene);
+  } else {
+    state.currentScene = nextScene;
+    renderScene();
   }
 }
 
-function submitAccusation(){
-  if(st.accuseCount===null||st.accuseSuspects.size===0||st.accuseCause===null)return;
-  currentScene='ending';
-  render();
-}
+function showEnding(endingId) {
+  // Strip 'ending_' prefix to match ENDINGS object keys
+  const id = endingId.replace('ending_', '');
+  const ending = ENDINGS[id];
+  if (!ending) { console.error('Ending not found:', endingId); return; }
 
-// Evidence panel
-function updateEvPanel(){
-  const list=document.getElementById('evList');
-  const count=document.getElementById('evCount');
-  if(count)count.textContent=st.ev.size;
+  let isNew = false, total = 0;
+  try { const r = saveEnding(id); isNew = r.isNew; total = r.total; } catch(e) {}
+  const allEndings = getEndings();
+  const totalEndings = Object.keys(ENDINGS).length;
 
-  if(st.ev.size===0){
-    list.innerHTML='<div class="ev-empty">尚未收集任何证据</div>';
-    return;
-  }
+  document.getElementById('game-screen').classList.remove('active');
+  document.querySelector('.back-btn').classList.remove('visible');
+  const endScreen = document.getElementById('ending-screen');
+  endScreen.classList.add('active');
 
-  list.innerHTML=[...st.ev].map(id=>{
-    const ev=EVIDENCE[id];
-    if(!ev)return'';
-    return `<div class="ev-item">
-      <div class="ev-title">🔍 ${ev.title}</div>
-      <div class="ev-detail">${ev.detail}</div>
-    </div>`;
+  const wrapper = document.getElementById('ending-wrapper');
+
+  let galleryHTML = Object.keys(ENDINGS).map((gid) => {
+    const e = ENDINGS[gid];
+    const discovered = allEndings.includes(gid);
+    const newBadge = (gid === id && isNew) ? ' new' : '';
+    const cls = discovered ? 'discovered' + newBadge : 'locked';
+    const tip = discovered ? e.title : '\u672A\u53D1\u73B0';
+    return `<div class="gallery-item ${cls}" title="${tip}">${discovered ? e.icon : '?'}<span class="tooltip">${tip}</span></div>`;
   }).join('');
+
+  wrapper.innerHTML = `
+    <div class="ending-image"><img src="${ending.image}" alt=""></div>
+    <div class="ending-label">${isNew ? '\u2726 \u65B0\u7ED3\u5C40\u89E3\u9501 \u2726' : '\u5DF2\u53D1\u73B0\u7684\u7ED3\u5C40'}</div>
+    <h2 class="ending-title">${ending.title}</h2>
+    <div class="ending-text">${ending.text.replace(/\n/g, '<br>')}</div>
+    <div class="ending-divider">\u10046 \u10046 \u10046</div>
+    <div class="ending-counter">\u8FD9\u662F <strong>${total}</strong> / ${totalEndings} \u4E2A\u7ED3\u5C40</div>
+    <div class="ending-gallery">${galleryHTML}</div>
+    <div class="ending-actions">
+      <button class="btn-secondary" onclick="renderCharacterSelect()">\u9009\u62E9\u5176\u4ED6\u89D2\u8272</button>
+      <button class="btn-secondary" onclick="returnToTitle()">\u56DE\u5230\u9996\u9875</button>
+    </div>
+    ${total < totalEndings ? `<p style="margin-top:1.5rem;color:var(--parchment-dim);font-size:0.9rem;">\u4E0D\u540C\u7684\u89D2\u8272\u548C\u9009\u62E9\u5C06\u901A\u5411\u622A\u7136\u4E0D\u540C\u7684\u547D\u8FD0\u2026\u2026</p>` : `<p style="margin-top:1.5rem;color:var(--gold);font-size:0.95rem;">\u4F60\u5DF2\u53D1\u73B0\u6240\u6709\u7ED3\u5C40\u3002\u4F20\u5947\u5DF2\u6210\u3002</p>`}
+  `;
+
+  endScreen.scrollIntoView({ behavior: 'smooth' });
 }
 
-// Toast
-let toastTimer=null;
-function showToast(msg){
-  const toast=document.getElementById('toast');
-  toast.innerHTML=`<span class="toast-icon">✓</span>${msg}`;
-  toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>toast.classList.remove('show'),2500);
+function backToSelect() {
+  document.getElementById('game-screen').classList.remove('active');
+  renderCharacterSelect();
 }
 
-// Evidence panel toggle
-document.getElementById('evToggle').addEventListener('click',()=>{
-  document.getElementById('evPanel').classList.toggle('open');
-});
-
-// Close evidence panel when clicking outside
-document.addEventListener('click',(e)=>{
-  if(!e.target.closest('#evPanel')&&!e.target.closest('#evToggle')){
-    document.getElementById('evPanel').classList.remove('open');
-  }
-});
-
-// Init
-render();
+function returnToTitle() {
+  document.getElementById('ending-screen').classList.remove('active');
+  document.getElementById('select-screen').classList.remove('active');
+  document.getElementById('game-screen').classList.remove('active');
+  const titleScreen = document.getElementById('title-screen');
+  titleScreen.style.display = 'flex';
+  titleScreen.classList.remove('hidden');
+}
 </script>
 </body>
 </html>
